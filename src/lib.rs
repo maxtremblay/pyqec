@@ -1,3 +1,4 @@
+//! Something
 use ldpc::{LinearCode, SparseBinMat, SparseBinSlice};
 use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
