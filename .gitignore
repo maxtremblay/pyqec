@@ -2,3 +2,5 @@
 Cargo.lock
 /venv
 poetry.lock
+pyqec/__pycache
+pyqec/pyqec.cpython-39-x86_64-linux-gnu.so
