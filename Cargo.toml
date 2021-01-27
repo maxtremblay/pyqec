@@ -3,6 +3,7 @@ name = "pyqec"
 version = "0.2.0"
 authors = ["maxtremblay <matrem@protonmail.com>"]
 edition = "2018"
+license = "MIT"
 
 [lib]
 name = "pyqec"

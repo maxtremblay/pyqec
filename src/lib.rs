@@ -1,4 +1,3 @@
-//! Something
 use ldpc::{LinearCode, SparseBinMat, SparseBinSlice};
 use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
@@ -12,33 +11,38 @@ use rand_xoshiro::Xoshiro512StarStar;
 /// or a generator matrix `G`.
 /// These matrices have the property that `H G^T = 0`.
 ///
-/// Example
-/// -------
-/// This example shows 2 way to define the Hamming code.
-/// ```
-/// # From a list of checks.
-/// code_from_checks = LinearCode.from_checks(
-///     7,
-///     [[0, 1, 2, 4], [0, 1, 3, 5], [0, 2, 3, 6]]
-/// )
+/// Example:
+///     This example shows 2 way to define the Hamming code.
 ///
-/// # From a list of codeword generators.
-/// code_from_generators = LinearCode.from_generators(
-///     7,
-///     [[0, 4, 5, 6], [1, 4, 5], [2, 4, 6], [3, 5, 6]]
-/// )
-/// ```
+///     From a parity check matrix
 ///
-/// Comparison
-/// ----------
-/// Use the `==` if you want to know if 2 codes
-/// have exactly the same parity check matrix and
-/// generator matrix.
-/// However, since there is freedom in the choice of
-/// parity check matrix and generator matrix for the same code,
-/// use `has_same_codespace_as` method
-/// if you want to know if 2 codes define the same codespace even
-/// if they may have different parity check matrix or generator matrix.
+///         code_from_checks = LinearCode.from_checks(
+///             7,
+///             [[0, 1, 2, 4], [0, 1, 3, 5], [0, 2, 3, 6]]
+///         )
+///
+///     From a generator matrix
+///
+///         code_from_generators = LinearCode.from_generators(
+///             7,
+///             [[0, 4, 5, 6], [1, 4, 5], [2, 4, 6], [3, 5, 6]]
+///         )
+///
+/// Comparison:
+///     Use the `==` if you want to know if 2 codes
+///     have exactly the same parity check matrix and
+///     generator matrix.
+///     However, since there is freedom in the choice of
+///     parity check matrix and generator matrix for the same code,
+///     use `has_same_codespace_as` method
+///     if you want to know if 2 codes define the same codespace even
+///     if they may have different parity check matrix or generator matrix.
+///
+///         >>> code_from_checks == code_from_generators
+///         False
+///         >>> code_from_checks.has_same_codespace_as(code_from_generators)
+///         True
+///
 #[pyclass(name = LinearCode)]
 struct PyLinearCode {
     inner: LinearCode,
@@ -56,31 +60,23 @@ impl PyLinearCode {
     /// A parity check matrix `H` has the property that
     /// `Hx = 0` for all codeword x.
     ///
-    /// Parameters
-    /// ----------
-    /// block_size: int
-    ///     The number of bits in the code.
-    /// checks: list of list of int
-    ///     A list of checks where each check is represented by the
-    ///     list of positions where this check has value 1.
+    /// Args:
+    ///     block_size (int): The number of bits in the code.
     ///
-    /// Returns
-    /// -------
-    /// LinearCode
-    ///     The linear code with the given checks.
+    ///     checks (list of list of int): A list of checks where each check is
+    ///         represented by the list of positions where this check has value 1.
     ///
-    /// Raises
-    /// ------
-    /// ValueError
-    ///     If a check has a position greater or equal to the
-    ///     block size.
+    /// Returns:
+    ///     LinearCode: The linear code with the given checks.
     ///
-    /// Examples
-    /// --------
-    /// A 3 bits repetition code.
-    /// ```
-    /// code = LinearCode.from_checks(3, [[0, 1], [1, 2]])
-    /// ```
+    /// Raises:
+    ///     ValueError: If a check has a position greater
+    ///         or equal to the block size.
+    ///
+    /// Example:
+    ///     A 3 bits repetition code.
+    ///
+    ///         code = LinearCode.from_checks(3, [[0, 1], [1, 2]])
     #[staticmethod]
     #[text_signature = "(block_size, checks)"]
     fn from_checks(block_size: usize, checks: Vec<Vec<usize>>) -> PyResult<PyLinearCode> {
@@ -96,31 +92,24 @@ impl PyLinearCode {
     /// for any codeword `x` we have `x = G^T y`
     /// where `y` is the unencoded bitstring.
     ///
-    /// Parameters
-    /// ----------
-    /// block_size: int
-    ///     The number of bits in the code.
-    /// generators: list of list of int
-    ///     A list of codeword generators where each generator is represented by the
-    ///     list of positions where this generator has value 1.
+    /// Args:
+    ///     block_size (int): The number of bits in the code.
     ///
-    /// Returns
-    /// -------
-    /// LinearCode
-    ///     The linear code with the given codeword generators.
+    ///     generators (list of list of int): A list of codeword generators
+    ///         where each generator is represented by the
+    ///         list of positions where this generator has value 1.
     ///
-    /// Raises
-    /// ------
-    /// ValueError
-    ///     If a generator has a position greater or equal to the
-    ///     block size.
+    /// Returns:
+    ///     LinearCode: The linear code with the given codeword generators.
     ///
-    /// Examples
-    /// --------
-    /// A 3 bits repetition code.
-    /// ```
-    /// code = LinearCode.from_generators(3, [[0, 1, 2]])
-    /// ```
+    /// Raises:
+    ///     ValueError: If a generator has a position greater
+    ///         or equal to the block size.
+    ///
+    /// Example:
+    ///     A 3 bits repetition code.
+    ///
+    ///         code = LinearCode.from_generators(3, [[0, 1, 2]])
     #[staticmethod]
     #[text_signature = "(block_size, generators)"]
     fn from_generators(block_size: usize, generators: Vec<Vec<usize>>) -> PyResult<PyLinearCode> {
@@ -188,7 +177,7 @@ impl PyLinearCode {
     }
 
     /// The number of encoded qubits.
-    #[text_signature = "($self)"]
+    #[text_signature = "(self)"]
     fn dimension(&self) -> usize {
         self.inner.dimension()
     }
@@ -206,7 +195,7 @@ impl PyLinearCode {
     ///     This function execution time scale exponentially
     ///     with the dimension of the code.
     ///     Use at your own risk!
-    #[text_signature = "($self)"]
+    #[text_signature = "(self)"]
     fn minimal_distance(&self) -> i64 {
         self.inner
             .minimal_distance()
