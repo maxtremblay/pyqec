@@ -1,6 +1,6 @@
 [package]
 name = "pyqec"
-version = "0.2.0"
+version = "0.2.1"
 authors = ["maxtremblay <matrem@protonmail.com>"]
 edition = "2018"
 license = "MIT"
@@ -10,7 +10,7 @@ name = "pyqec"
 crate-type = ["cdylib"]
 
 [dependencies]
-ldpc = "0.2.0"
+ldpc = "0.2.1"
 pyo3 = { version = "0.12.4", features = ["extension-module"] }
 rand = "0.7.3"
 rand_xoshiro = "0.4.0"
