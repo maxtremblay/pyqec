@@ -28,6 +28,15 @@ class Statistics:
             / self.sample_size()
         )
 
+    def __repr__(self):
+        string =  "Statistics\n"
+        string += "----------\n"
+        string += f"sample size: {self.sample_size()}\n"
+        string += f"failure rate: {self.failure_rate()}\n"
+        string += f"success rate: {self.success_rate()}\n"
+        string += f"uncertainty: {self.uncertainty()}"
+        return string
+
 
 class ClassicalExperiment:
     def __init__(self, code, decoder, noise):
@@ -50,5 +59,6 @@ class ClassicalExperiment:
         return stats
 
     def run_n_times(self, number_of_iterations):
-        self.run_while(lambda s: s.sample_size() < number_of_iterations)
+        return self.run_while(lambda s: s.sample_size() < number_of_iterations)
+
 
