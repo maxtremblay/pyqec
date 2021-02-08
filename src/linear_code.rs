@@ -45,7 +45,7 @@ use rand_xoshiro::Xoshiro512StarStar;
 ///
 #[pyclass(name = LinearCode)]
 pub struct PyLinearCode {
-    inner: LinearCode,
+    pub(crate) inner: LinearCode,
 }
 
 impl From<LinearCode> for PyLinearCode {
@@ -259,11 +259,9 @@ impl PyLinearCode {
     ///     of the code.
     #[text_signature = "(self, message)"]
     pub fn syndrome_of(&self, message: Vec<usize>) -> PyResult<Vec<usize>> {
-        let vector = SparseBinSlice::new(self.inner.block_size(), &message);
-        self.inner
-            .syndrome_of(&vector)
-            .map(|syndrome| syndrome.to_positions_vec())
-            .map_err(|error| PyValueError::new_err(error.to_string()))
+        let vector = SparseBinSlice::try_new(self.inner.block_size(), &message)
+            .map_err(|error| PyValueError::new_err(error.to_string()))?;
+        Ok(self.inner.syndrome_of(&vector).to_positions_vec())
     }
 
     /// Checks if the given message is a codeword of the code.
@@ -286,7 +284,7 @@ impl PyLinearCode {
     #[text_signature = "(self, message)"]
     pub fn has_codeword(&self, message: Vec<usize>) -> PyResult<bool> {
         SparseBinSlice::try_new(self.inner.block_size(), &message)
-            .map(|vector| self.inner.has_codeword(&vector).unwrap())
+            .map(|vector| self.inner.has_codeword(&vector))
             .map_err(|error| PyValueError::new_err(error.to_string()))
     }
 
@@ -305,9 +303,10 @@ impl PyLinearCode {
     ///     as this code codewords.
     #[text_signature = "(self, other)"]
     pub fn has_same_codespace_as(&self, other: &Self) -> bool {
-        self.inner.has_the_same_codespace_as(&other.inner)
+        self.inner.has_same_codespace_as(&other.inner)
     }
 }
+
 #[pyproto]
 impl PyObjectProtocol for PyLinearCode {
     fn __repr__(&self) -> String {

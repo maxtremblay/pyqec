@@ -1,2 +1,3 @@
-from .pyqec import LinearCode, BinarySymmetricChannel
+from .pyqec import LinearCode, BinarySymmetricChannel, FlipDecoder
 from . import experiments
+
