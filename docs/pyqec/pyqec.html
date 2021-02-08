@@ -35,30 +35,38 @@
 <dl>
 <dt id="pyqec.pyqec.BinarySymmetricChannel"><code class="flex name class">
 <span>class <span class="ident">BinarySymmetricChannel</span></span>
+<span>(</span><span>...)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>An implementation of a binary symmetric channel.</p>
 <p>A binary symmetric channel flips the value
 of each bits according to a given error probability.</p></div>
-<h3>Static methods</h3>
+<h3>Methods</h3>
 <dl>
-<dt id="pyqec.pyqec.BinarySymmetricChannel.with_probability"><code class="name flex">
-<span>def <span class="ident">with_probability</span></span>(<span>probability)</span>
+<dt id="pyqec.pyqec.BinarySymmetricChannel.error_probability"><code class="name flex">
+<span>def <span class="ident">error_probability</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="pyqec.pyqec.BinarySymmetricChannel.with_probability_and_random_seed"><code class="name flex">
-<span>def <span class="ident">with_probability_and_random_seed</span></span>(<span>probability)</span>
+<dt id="pyqec.pyqec.BinarySymmetricChannel.sample_error_of_length"><code class="name flex">
+<span>def <span class="ident">sample_error_of_length</span></span>(<span>self, length)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
 </dl>
+</dd>
+<dt id="pyqec.pyqec.FlipDecoder"><code class="flex name class">
+<span>class <span class="ident">FlipDecoder</span></span>
+<span>(</span><span>...)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
 <h3>Methods</h3>
 <dl>
-<dt id="pyqec.pyqec.BinarySymmetricChannel.sample_error_of_length"><code class="name flex">
-<span>def <span class="ident">sample_error_of_length</span></span>(<span>self, length)</span>
+<dt id="pyqec.pyqec.FlipDecoder.decode"><code class="name flex">
+<span>def <span class="ident">decode</span></span>(<span>...)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -337,9 +345,14 @@ of the code.</dd>
 <li>
 <h4><code><a title="pyqec.pyqec.BinarySymmetricChannel" href="#pyqec.pyqec.BinarySymmetricChannel">BinarySymmetricChannel</a></code></h4>
 <ul class="">
+<li><code><a title="pyqec.pyqec.BinarySymmetricChannel.error_probability" href="#pyqec.pyqec.BinarySymmetricChannel.error_probability">error_probability</a></code></li>
 <li><code><a title="pyqec.pyqec.BinarySymmetricChannel.sample_error_of_length" href="#pyqec.pyqec.BinarySymmetricChannel.sample_error_of_length">sample_error_of_length</a></code></li>
-<li><code><a title="pyqec.pyqec.BinarySymmetricChannel.with_probability" href="#pyqec.pyqec.BinarySymmetricChannel.with_probability">with_probability</a></code></li>
-<li><code><a title="pyqec.pyqec.BinarySymmetricChannel.with_probability_and_random_seed" href="#pyqec.pyqec.BinarySymmetricChannel.with_probability_and_random_seed">with_probability_and_random_seed</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="pyqec.pyqec.FlipDecoder" href="#pyqec.pyqec.FlipDecoder">FlipDecoder</a></code></h4>
+<ul class="">
+<li><code><a title="pyqec.pyqec.FlipDecoder.decode" href="#pyqec.pyqec.FlipDecoder.decode">decode</a></code></li>
 </ul>
 </li>
 <li>

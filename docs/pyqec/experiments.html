@@ -26,8 +26,59 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def sample_noise(code, noise_model):
-    return noise_model.sample_error_of_length(code.block_size())</code></pre>
+<pre><code class="python">from math import sqrt
+
+class Statistics:
+    def __init__(self):
+        self.number_of_successes = 0
+        self.number_of_failures = 0
+
+    def add_failure(self):
+        self.number_of_failures += 1
+
+    def add_success(self):
+        self.number_of_successes += 1
+
+    def sample_size(self):
+        return self.number_of_failures + self.number_of_successes
+
+    def failure_rate(self):
+        return self.number_of_failures / self.sample_size()
+
+    def success_rate(self):
+        return self.number_of_successes / self.sample_size()
+
+    def uncertainty(self):
+        assert(self.sample_size != 0)
+        return sqrt(
+            self.failure_rate() 
+            * self.success_rate() 
+            / self.sample_size()
+        )
+
+
+class ClassicalExperiment:
+    def __init__(self, code, decoder, noise):
+        self.code = code
+        self.decoder = decoder
+        self.noise = noise
+
+    def run_once(self):
+        error = self.noise.sample_error_of_length(self.code.block_size())
+        correction = self.decoder.decode(error)
+        return error == correction
+
+    def run_while(self, condition):
+        stats = Statistics()
+        while condition(stats):
+            if self.run_once():
+                stats.add_success()
+            else:
+                stats.add_failure()
+        return stats
+
+    def run_n_times(self, number_of_iterations):
+        self.run_while(lambda s: s.sample_size() &lt; number_of_iterations)</code></pre>
 </details>
 </section>
 <section>
@@ -35,10 +86,13 @@
 <section>
 </section>
 <section>
-<h2 class="section-title" id="header-functions">Functions</h2>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="pyqec.experiments.sample_noise"><code class="name flex">
-<span>def <span class="ident">sample_noise</span></span>(<span>code, noise_model)</span>
+<dt id="pyqec.experiments.ClassicalExperiment"><code class="flex name class">
+<span>class <span class="ident">ClassicalExperiment</span></span>
+<span>(</span><span>code, decoder, noise)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -46,13 +100,205 @@
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def sample_noise(code, noise_model):
-    return noise_model.sample_error_of_length(code.block_size())</code></pre>
+<pre><code class="python">class ClassicalExperiment:
+    def __init__(self, code, decoder, noise):
+        self.code = code
+        self.decoder = decoder
+        self.noise = noise
+
+    def run_once(self):
+        error = self.noise.sample_error_of_length(self.code.block_size())
+        correction = self.decoder.decode(error)
+        return error == correction
+
+    def run_while(self, condition):
+        stats = Statistics()
+        while condition(stats):
+            if self.run_once():
+                stats.add_success()
+            else:
+                stats.add_failure()
+        return stats
+
+    def run_n_times(self, number_of_iterations):
+        self.run_while(lambda s: s.sample_size() &lt; number_of_iterations)</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="pyqec.experiments.ClassicalExperiment.run_n_times"><code class="name flex">
+<span>def <span class="ident">run_n_times</span></span>(<span>self, number_of_iterations)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def run_n_times(self, number_of_iterations):
+    self.run_while(lambda s: s.sample_size() &lt; number_of_iterations)</code></pre>
+</details>
+</dd>
+<dt id="pyqec.experiments.ClassicalExperiment.run_once"><code class="name flex">
+<span>def <span class="ident">run_once</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def run_once(self):
+    error = self.noise.sample_error_of_length(self.code.block_size())
+    correction = self.decoder.decode(error)
+    return error == correction</code></pre>
+</details>
+</dd>
+<dt id="pyqec.experiments.ClassicalExperiment.run_while"><code class="name flex">
+<span>def <span class="ident">run_while</span></span>(<span>self, condition)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def run_while(self, condition):
+    stats = Statistics()
+    while condition(stats):
+        if self.run_once():
+            stats.add_success()
+        else:
+            stats.add_failure()
+    return stats</code></pre>
 </details>
 </dd>
 </dl>
-</section>
-<section>
+</dd>
+<dt id="pyqec.experiments.Statistics"><code class="flex name class">
+<span>class <span class="ident">Statistics</span></span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Statistics:
+    def __init__(self):
+        self.number_of_successes = 0
+        self.number_of_failures = 0
+
+    def add_failure(self):
+        self.number_of_failures += 1
+
+    def add_success(self):
+        self.number_of_successes += 1
+
+    def sample_size(self):
+        return self.number_of_failures + self.number_of_successes
+
+    def failure_rate(self):
+        return self.number_of_failures / self.sample_size()
+
+    def success_rate(self):
+        return self.number_of_successes / self.sample_size()
+
+    def uncertainty(self):
+        assert(self.sample_size != 0)
+        return sqrt(
+            self.failure_rate() 
+            * self.success_rate() 
+            / self.sample_size()
+        )</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="pyqec.experiments.Statistics.add_failure"><code class="name flex">
+<span>def <span class="ident">add_failure</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_failure(self):
+    self.number_of_failures += 1</code></pre>
+</details>
+</dd>
+<dt id="pyqec.experiments.Statistics.add_success"><code class="name flex">
+<span>def <span class="ident">add_success</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_success(self):
+    self.number_of_successes += 1</code></pre>
+</details>
+</dd>
+<dt id="pyqec.experiments.Statistics.failure_rate"><code class="name flex">
+<span>def <span class="ident">failure_rate</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def failure_rate(self):
+    return self.number_of_failures / self.sample_size()</code></pre>
+</details>
+</dd>
+<dt id="pyqec.experiments.Statistics.sample_size"><code class="name flex">
+<span>def <span class="ident">sample_size</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def sample_size(self):
+    return self.number_of_failures + self.number_of_successes</code></pre>
+</details>
+</dd>
+<dt id="pyqec.experiments.Statistics.success_rate"><code class="name flex">
+<span>def <span class="ident">success_rate</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def success_rate(self):
+    return self.number_of_successes / self.sample_size()</code></pre>
+</details>
+</dd>
+<dt id="pyqec.experiments.Statistics.uncertainty"><code class="name flex">
+<span>def <span class="ident">uncertainty</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def uncertainty(self):
+    assert(self.sample_size != 0)
+    return sqrt(
+        self.failure_rate() 
+        * self.success_rate() 
+        / self.sample_size()
+    )</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
 </section>
 </article>
 <nav id="sidebar">
@@ -66,9 +312,27 @@
 <li><code><a title="pyqec" href="index.html">pyqec</a></code></li>
 </ul>
 </li>
-<li><h3><a href="#header-functions">Functions</a></h3>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="pyqec.experiments.ClassicalExperiment" href="#pyqec.experiments.ClassicalExperiment">ClassicalExperiment</a></code></h4>
 <ul class="">
-<li><code><a title="pyqec.experiments.sample_noise" href="#pyqec.experiments.sample_noise">sample_noise</a></code></li>
+<li><code><a title="pyqec.experiments.ClassicalExperiment.run_n_times" href="#pyqec.experiments.ClassicalExperiment.run_n_times">run_n_times</a></code></li>
+<li><code><a title="pyqec.experiments.ClassicalExperiment.run_once" href="#pyqec.experiments.ClassicalExperiment.run_once">run_once</a></code></li>
+<li><code><a title="pyqec.experiments.ClassicalExperiment.run_while" href="#pyqec.experiments.ClassicalExperiment.run_while">run_while</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="pyqec.experiments.Statistics" href="#pyqec.experiments.Statistics">Statistics</a></code></h4>
+<ul class="two-column">
+<li><code><a title="pyqec.experiments.Statistics.add_failure" href="#pyqec.experiments.Statistics.add_failure">add_failure</a></code></li>
+<li><code><a title="pyqec.experiments.Statistics.add_success" href="#pyqec.experiments.Statistics.add_success">add_success</a></code></li>
+<li><code><a title="pyqec.experiments.Statistics.failure_rate" href="#pyqec.experiments.Statistics.failure_rate">failure_rate</a></code></li>
+<li><code><a title="pyqec.experiments.Statistics.sample_size" href="#pyqec.experiments.Statistics.sample_size">sample_size</a></code></li>
+<li><code><a title="pyqec.experiments.Statistics.success_rate" href="#pyqec.experiments.Statistics.success_rate">success_rate</a></code></li>
+<li><code><a title="pyqec.experiments.Statistics.uncertainty" href="#pyqec.experiments.Statistics.uncertainty">uncertainty</a></code></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
