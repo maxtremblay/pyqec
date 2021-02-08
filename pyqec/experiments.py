@@ -38,16 +38,19 @@ class Statistics:
         return string
 
 
-class ClassicalExperiment:
+class ClassicalDecodingExperiment:
     def __init__(self, code, decoder, noise):
         self.code = code
         self.decoder = decoder
         self.noise = noise
 
     def run_once(self):
+        """
+            Run 1 decoding simulation assuming a zero codeword.
+        """
         error = self.noise.sample_error_of_length(self.code.block_size())
-        correction = self.decoder.decode(error)
-        return error == correction
+        codeword = self.decoder.decode(error)
+        return codeword == []
 
     def run_while(self, condition):
         stats = Statistics()
