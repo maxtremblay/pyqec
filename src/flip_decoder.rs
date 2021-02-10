@@ -25,4 +25,8 @@ impl PyFlipDecoder {
             .map(|message| self.inner.decode(&message).to_positions_vec())
             .map_err(|error| PyValueError::new_err(error.to_string()))
     }
+
+    pub fn to_json(&self) -> String {
+        String::from("Flip decoder")
+    }
 }
