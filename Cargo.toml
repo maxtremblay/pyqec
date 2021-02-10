@@ -10,9 +10,10 @@ name = "pyqec"
 crate-type = ["cdylib"]
 
 [dependencies]
-ldpc = "0.3.0"
+ldpc = "0.3.2"
 pyo3 = { version = "0.12.4", features = ["extension-module"] }
 rand = "0.7.3"
 rand_xoshiro = "0.4.0"
 serde = "1.0.123"
 serde_json = "1.0.61"
+sparse-bin-mat = "0.5.0"
