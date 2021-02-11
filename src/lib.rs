@@ -11,6 +11,8 @@ use flip_decoder::PyFlipDecoder;
 
 mod randomness;
 
+pub mod sparse;
+
 /// A toolbox for classical (and soon quantum) error correction.
 #[pymodule]
 fn pyqec(_py: Python, module: &PyModule) -> PyResult<()> {
