@@ -1,9 +1,29 @@
-use ldpc::{LinearCode, SparseBinMat, SparseBinSlice};
+use crate::randomness::get_rng_with_seed;
+use crate::sparse::{PyBinaryMatrix, PyBinaryVector};
+use ldpc::LinearCode;
 use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
 use pyo3::PyObjectProtocol;
-use rand::SeedableRng;
-use rand_xoshiro::Xoshiro512StarStar;
+use pyo3::PySequenceProtocol;
+
+pub(crate) fn random_regular_code(
+    block_size: usize,
+    number_of_checks: usize,
+    bit_degree: usize,
+    check_degree: usize,
+    random_seed: Option<u64>,
+    tag: Option<String>,
+) -> PyResult<PyLinearCode> {
+    let mut rng = get_rng_with_seed(random_seed);
+    LinearCode::random_regular_code()
+        .block_size(block_size)
+        .number_of_checks(number_of_checks)
+        .bit_degree(bit_degree)
+        .check_degree(check_degree)
+        .sample_with(&mut rng)
+        .map(|code| PyLinearCode { inner: code, tag })
+        .map_err(|error| PyValueError::new_err(error.to_string()))
+}
 
 /// An implementation of linear codes optimized for LDPC codes.
 ///
@@ -44,143 +64,59 @@ use rand_xoshiro::Xoshiro512StarStar;
 ///         True
 ///
 #[pyclass(name = LinearCode)]
+#[text_signature = "(parity_check_matrix, generator_matrix, /)"]
 pub struct PyLinearCode {
     pub(crate) inner: LinearCode,
+    tag: Option<String>,
 }
 
 impl From<LinearCode> for PyLinearCode {
     fn from(inner: LinearCode) -> Self {
-        Self { inner }
+        Self { inner, tag: None }
     }
 }
 
 #[pymethods]
 impl PyLinearCode {
-    /// Constructs a LinearCode from a parity check matrix.
-    /// A parity check matrix `H` has the property that
-    /// `Hx = 0` for all codeword x.
-    ///
-    /// Args:
-    ///     block_size (int): The number of bits in the code.
-    ///
-    ///     checks (list of list of int): A list of checks where each check is
-    ///         represented by the list of positions where this check has value 1.
-    ///
-    /// Returns:
-    ///     LinearCode: The linear code with the given checks.
-    ///
-    /// Raises:
-    ///     ValueError: If a check has a position greater
-    ///         or equal to the block size.
-    ///
-    /// Example:
-    ///     A 3 bits repetition code.
-    ///
-    ///         code = LinearCode.from_checks(3, [[0, 1], [1, 2]])
-    #[staticmethod]
-    #[text_signature = "(block_size, checks)"]
-    pub fn from_checks(block_size: usize, checks: Vec<Vec<usize>>) -> PyResult<PyLinearCode> {
-        let matrix = SparseBinMat::try_new(block_size, checks)
-            .map_err(|error| PyValueError::new_err(error.to_string()))?;
-        Ok(PyLinearCode {
-            inner: LinearCode::from_parity_check_matrix(matrix),
-        })
-    }
-
-    /// Constructs a LinearCode from a generator matrix.
-    /// A generator matrix `G` has the property that
-    /// for any codeword `x` we have `x = G^T y`
-    /// where `y` is the unencoded bitstring.
-    ///
-    /// Args:
-    ///     block_size (int): The number of bits in the code.
-    ///
-    ///     generators (list of list of int): A list of codeword generators
-    ///         where each generator is represented by the
-    ///         list of positions where this generator has value 1.
-    ///
-    /// Returns:
-    ///     LinearCode: The linear code with the given codeword generators.
-    ///
-    /// Raises:
-    ///     ValueError: If a generator has a position greater
-    ///         or equal to the block size.
-    ///
-    /// Example:
-    ///     A 3 bits repetition code.
-    ///
-    ///         code = LinearCode.from_generators(3, [[0, 1, 2]])
-    #[staticmethod]
-    #[text_signature = "(block_size, generators)"]
-    pub fn from_generators(
-        block_size: usize,
-        generators: Vec<Vec<usize>>,
-    ) -> PyResult<PyLinearCode> {
-        let matrix = SparseBinMat::try_new(block_size, generators)
-            .map_err(|error| PyValueError::new_err(error.to_string()))?;
-        Ok(PyLinearCode {
-            inner: LinearCode::from_generator_matrix(matrix),
-        })
-    }
-
-    /// Samples a random regular codes.
-    ///
-    /// Parameters
-    /// ----------
-    /// block_size: int, default = 4
-    ///     The number of bits in the code.
-    /// number_of_checks: int, default = 3
-    ///     The number of checks in the code.
-    /// bit_degree: int, default = 3
-    ///     The number of checks connected to each bit.
-    /// check_degree: int, default = 4
-    ///     The number of bits connected to each check.
-    /// random_seed: int, optional
-    ///     A seed to feed the random number generator.
-    ///     By default, the rng is initialize from entropy.
-    ///
-    /// Returns
-    /// -------
-    /// LinearCode
-    ///     A random linear code with the given parameters.
-    ///
-    /// Raises
-    /// ------
-    /// ValueError
-    ///     If `block_size * bit_degree != number_of_checks * check_degree`.
-    #[staticmethod]
-    #[args(block_size = 4, number_of_checks = 3, bit_degree = 3, check_degree = 4)]
-    #[text_signature = "(block_size, number_of_checks, bit_degree, check_degree, random_seed)"]
-    pub fn random_regular_code(
-        block_size: usize,
-        number_of_checks: usize,
-        bit_degree: usize,
-        check_degree: usize,
-        random_seed: Option<u64>,
+    #[new]
+    pub fn new(
+        parity_check_matrix: Option<PyBinaryMatrix>,
+        generator_matrix: Option<PyBinaryMatrix>,
+        tag: Option<String>,
     ) -> PyResult<Self> {
-        let mut rng = if let Some(seed) = random_seed {
-            Xoshiro512StarStar::seed_from_u64(seed)
-        } else {
-            Xoshiro512StarStar::from_entropy()
-        };
-        LinearCode::random_regular_code()
-            .block_size(block_size)
-            .number_of_checks(number_of_checks)
-            .bit_degree(bit_degree)
-            .check_degree(check_degree)
-            .sample_with(&mut rng)
-            .map(|code| code.into())
-            .map_err(|error| PyValueError::new_err(error.to_string()))
+        match (parity_check_matrix, generator_matrix) {
+            (Some(h), Some(g)) => h.dot_with_matrix(&g.transposed()).and_then(|product| {
+                if product.is_zero() {
+                    Ok(Self {
+                        inner: LinearCode::from_parity_check_matrix(h.inner),
+                        tag,
+                    })
+                } else {
+                    Err(PyValueError::new_err("matrices are not orthogonal"))
+                }
+            }),
+            (Some(h), None) => Ok(Self {
+                inner: LinearCode::from_parity_check_matrix(h.inner),
+                tag,
+            }),
+            (None, Some(g)) => Ok(Self {
+                inner: LinearCode::from_parity_check_matrix(g.inner),
+                tag,
+            }),
+            (None, None) => Err(PyValueError::new_err(
+                "neither parity check matrix or generator matrix were specified",
+            )),
+        }
     }
 
     /// The number of bits in the code.
-    #[text_signature = "(self)"]
-    pub fn block_size(&self) -> usize {
+    #[text_signature = "($self)"]
+    pub fn length(&self) -> usize {
         self.inner.block_size()
     }
 
     /// The number of encoded qubits.
-    #[text_signature = "(self)"]
+    #[text_signature = "($self)"]
     pub fn dimension(&self) -> usize {
         self.inner.dimension()
     }
@@ -220,22 +156,14 @@ impl PyLinearCode {
 
     /// The parity check matrix of the code.
     #[text_signature = "(self)"]
-    pub fn parity_check_matrix(&self) -> Vec<Vec<usize>> {
-        self.inner
-            .parity_check_matrix()
-            .rows()
-            .map(|row| row.as_slice().to_owned())
-            .collect()
+    pub fn parity_check_matrix(&self) -> PyBinaryMatrix {
+        self.inner.parity_check_matrix().clone().into()
     }
 
     /// The generator matrix of the code.
     #[text_signature = "(self)"]
-    pub fn generator_matrix(&self) -> Vec<Vec<usize>> {
-        self.inner
-            .generator_matrix()
-            .rows()
-            .map(|row| row.as_slice().to_owned())
-            .collect()
+    pub fn generator_matrix(&self) -> PyBinaryMatrix {
+        self.inner.generator_matrix().clone().into()
     }
 
     /// The syndrome of a given message.
@@ -255,13 +183,10 @@ impl PyLinearCode {
     /// Raises
     /// ------
     /// ValueError
-    ///     If a position in the message is greater or equal to the block size
-    ///     of the code.
+    ///     If a position in the message is greater or equal to the length of the code.
     #[text_signature = "(self, message)"]
-    pub fn syndrome_of(&self, message: Vec<usize>) -> PyResult<Vec<usize>> {
-        let vector = SparseBinSlice::try_new(self.inner.block_size(), &message)
-            .map_err(|error| PyValueError::new_err(error.to_string()))?;
-        Ok(self.inner.syndrome_of(&vector).to_positions_vec())
+    pub fn syndrome_of(&self, message: PyRef<PyBinaryVector>) -> PyResult<PyBinaryVector> {
+        Ok(self.inner.syndrome_of(&message.inner).into())
     }
 
     /// Checks if the given message is a codeword of the code.
@@ -274,18 +199,11 @@ impl PyLinearCode {
     /// Returns
     /// -------
     /// bool
-    ///     True if the message has a zero syndrome and False otherwise.
-    ///
-    /// Raises
-    /// ------
-    /// ValueError
-    ///     If a position in the message is greater or equal to the block size
-    ///     of the code.
+    ///     True if the message has the right length and a zero syndrome
+    ///     or False otherwise.
     #[text_signature = "(self, message)"]
-    pub fn has_codeword(&self, message: Vec<usize>) -> PyResult<bool> {
-        SparseBinSlice::try_new(self.inner.block_size(), &message)
-            .map(|vector| self.inner.has_codeword(&vector))
-            .map_err(|error| PyValueError::new_err(error.to_string()))
+    pub fn has_codeword(&self, message: PyRef<PyBinaryVector>) -> bool {
+        self.inner.has_codeword(&message.inner)
     }
 
     /// Checks if the other code defined the same codespace
@@ -302,7 +220,7 @@ impl PyLinearCode {
     ///     True if other codewords are exactly the same
     ///     as this code codewords.
     #[text_signature = "(self, other)"]
-    pub fn has_same_codespace_as(&self, other: &Self) -> bool {
+    pub fn has_same_codespace_as(&self, other: PyRef<Self>) -> bool {
         self.inner.has_same_codespace_as(&other.inner)
     }
 }
@@ -310,10 +228,23 @@ impl PyLinearCode {
 #[pyproto]
 impl PyObjectProtocol for PyLinearCode {
     fn __repr__(&self) -> String {
-        format!(
+        let mut display = if let Some(tag) = self.tag.as_ref() {
+            format!("Tag = {}\n", tag)
+        } else {
+            String::new()
+        };
+        display.push_str(&format!(
             "Parity check matrix:\n{}\nGenerator matrix:\n{}",
             self.inner.parity_check_matrix(),
             self.inner.generator_matrix(),
-        )
+        ));
+        display
+    }
+}
+
+#[pyproto]
+impl PySequenceProtocol for PyLinearCode {
+    fn __len__(&self) -> usize {
+        self.inner.block_size()
     }
 }

@@ -1,4 +1,5 @@
 use crate::randomness::{get_rng_with_seed, RandomNumberGenerator};
+use crate::sparse::PyBinaryVector;
 use ldpc::noise_model::{BinarySymmetricChannel, NoiseModel, Probability};
 use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
@@ -32,10 +33,10 @@ impl PyBinarySymmetricChannel {
     }
 
     #[text_signature = "(self, length)"]
-    fn sample_error_of_length(&mut self, length: usize) -> Vec<usize> {
+    fn sample_error_of_length(&mut self, length: usize) -> PyBinaryVector {
         self.channel
             .sample_error_of_length(length, &mut self.rng)
-            .to_positions_vec()
+            .into()
     }
 
     #[text_signature = "(self)"]

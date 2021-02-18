@@ -1,4 +1,4 @@
-from .pyqec import LinearCode, BinarySymmetricChannel, FlipDecoder
+from . import classical
 from . import experiments
 from . import sparse
 

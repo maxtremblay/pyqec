@@ -2,7 +2,7 @@ use crate::sparse::PyBinaryVector;
 use pyo3::class::basic::CompareOp;
 use pyo3::exceptions::{PyIndexError, PyNotImplementedError, PyValueError};
 use pyo3::prelude::*;
-use pyo3::{PyNumberProtocol, PyObjectProtocol};
+use pyo3::{PyMappingProtocol, PyNumberProtocol, PyObjectProtocol};
 use sparse_bin_mat::SparseBinMat;
 use std::collections::hash_map::DefaultHasher;
 use std::hash::{Hash, Hasher};
@@ -162,5 +162,39 @@ impl PyNumberProtocol for PyBinaryMatrix {
             .bitwise_xor_with(&rhs.inner)
             .map(|matrix| matrix.into())
             .map_err(|error| PyValueError::new_err(error.to_string()))
+    }
+}
+
+#[pyproto]
+impl PyMappingProtocol for PyBinaryMatrix {
+    fn __getitem__(&'p self, indices: (isize, isize)) -> PyResult<u8> {
+        if indices.0 < -1 * self.number_of_rows() as isize
+            || indices.1 < -1 * self.number_of_columns() as isize
+        {
+            return Err(PyIndexError::new_err(format!(
+                "invalid indices {:?} for {} x {} matrix",
+                indices,
+                self.number_of_rows(),
+                self.number_of_columns()
+            )));
+        }
+        let row = if indices.0 < 0 {
+            -1 * indices.0
+        } else {
+            indices.0
+        } as usize;
+        let column = if indices.1 < 0 {
+            -1 * indices.1
+        } else {
+            indices.1
+        } as usize;
+        self.inner.get(row, column).ok_or_else(|| {
+            PyIndexError::new_err(format!(
+                "invalid indices {:?} for {} x {} matrix",
+                indices,
+                self.number_of_rows(),
+                self.number_of_columns()
+            ))
+        })
     }
 }

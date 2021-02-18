@@ -63,9 +63,9 @@ class ClassicalDecodingExperiment:
         """
             Run a single decoding simulation assuming a zero codeword.
         """
-        error = self.noise.sample_error_of_length(self.code.block_size())
+        error = self.noise.sample_error_of_length(len(self.code))
         codeword = self.decoder.decode(error)
-        return codeword == []
+        return codeword.is_zero()
 
     def run_while(self, condition):
         stats = Statistics()
@@ -82,7 +82,7 @@ class ClassicalDecodingExperiment:
     def to_json(self):
         return json.dumps(
             {
-                "block_size": self.code.block_size(),
+                "length": len(self),
                 "dimension": self.code.dimension(),
                 "number_of_checks": self.code.number_of_checks(),
                 "decoder": self.decoder.to_json(),

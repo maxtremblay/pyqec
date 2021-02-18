@@ -3,6 +3,7 @@ use ldpc::decoders::FlipDecoder;
 use ldpc::{LinearCode, SparseBinVec};
 use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
+use pyo3::PySequenceProtocol;
 
 #[pyclass(name = FlipDecoder)]
 pub struct PyFlipDecoder {
@@ -16,7 +17,7 @@ impl PyFlipDecoder {
     pub fn new(code: &PyLinearCode) -> PyFlipDecoder {
         PyFlipDecoder {
             inner: FlipDecoder::new(code.inner.clone()),
-            block_size: code.block_size(),
+            block_size: code.__len__(),
         }
     }
 

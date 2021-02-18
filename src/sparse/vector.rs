@@ -1,7 +1,7 @@
 use pyo3::class::basic::CompareOp;
 use pyo3::exceptions::{PyIndexError, PyNotImplementedError, PyValueError};
 use pyo3::prelude::*;
-use pyo3::{PyNumberProtocol, PyObjectProtocol};
+use pyo3::{PyIterProtocol, PyNumberProtocol, PyObjectProtocol, PySequenceProtocol};
 use sparse_bin_mat::SparseBinVec;
 use std::collections::hash_map::DefaultHasher;
 use std::hash::{Hash, Hasher};
@@ -80,6 +80,12 @@ impl PyBinaryVector {
     }
 }
 
+impl PyBinaryVector {
+    pub fn non_trivial_positions(&self) -> &[usize] {
+        self.inner.as_slice()
+    }
+}
+
 #[pyproto]
 impl PyObjectProtocol for PyBinaryVector {
     fn __repr__(&self) -> String {
@@ -108,5 +114,66 @@ impl PyNumberProtocol for PyBinaryVector {
             .bitwise_xor_with(&rhs.inner)
             .map(|vector| vector.into())
             .map_err(|error| PyValueError::new_err(error.to_string()))
+    }
+}
+
+#[pyproto]
+impl PySequenceProtocol for PyBinaryVector {
+    fn __len__(&self) -> usize {
+        self.inner.len()
+    }
+
+    fn __getitem__(&'p self, idx: isize) -> PyResult<u8> {
+        if idx < -1 * self.__len__() as isize {
+            return Err(PyIndexError::new_err(format!(
+                "invalid index {} for vector of length {}",
+                idx,
+                self.__len__()
+            )));
+        }
+        let idx = if idx < 0 { -1 * idx } else { idx } as usize;
+        self.inner.get(idx).ok_or_else(|| {
+            PyIndexError::new_err(format!(
+                "invalid index {} for vector of length {}",
+                idx,
+                self.__len__()
+            ))
+        })
+    }
+}
+
+#[pyproto]
+impl PyIterProtocol for PyBinaryVector {
+    fn __iter__(slf: PyRef<Self>) -> PyResult<Py<Iter>> {
+        let iter = Iter {
+            vector: Py::new(slf.py(), slf.clone())?,
+            index: 0,
+        };
+        Py::new(slf.py(), iter)
+    }
+}
+
+#[pyclass]
+pub struct Iter {
+    vector: Py<PyBinaryVector>,
+    index: usize,
+}
+
+#[pyproto]
+impl PyIterProtocol for Iter {
+    fn __iter__(slf: PyRef<Self>) -> PyRef<Self> {
+        slf
+    }
+
+    fn __next__(mut slf: PyRefMut<Self>) -> Option<usize> {
+        let value = slf
+            .vector
+            .try_borrow(slf.py())
+            .ok()?
+            .non_trivial_positions()
+            .get(slf.index)
+            .cloned();
+        slf.index += 1;
+        value
     }
 }
