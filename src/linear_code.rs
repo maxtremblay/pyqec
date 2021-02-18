@@ -3,8 +3,10 @@ use crate::sparse::{PyBinaryMatrix, PyBinaryVector};
 use ldpc::LinearCode;
 use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
+use pyo3::types::PyBytes;
 use pyo3::PyObjectProtocol;
 use pyo3::PySequenceProtocol;
+use pyo3::ToPyObject;
 
 pub(crate) fn random_regular_code(
     block_size: usize,
@@ -14,6 +16,7 @@ pub(crate) fn random_regular_code(
     random_seed: Option<u64>,
     tag: Option<String>,
 ) -> PyResult<PyLinearCode> {
+    let tag = tag.unwrap_or("".to_string());
     let mut rng = get_rng_with_seed(random_seed);
     LinearCode::random_regular_code()
         .block_size(block_size)
@@ -63,27 +66,32 @@ pub(crate) fn random_regular_code(
 ///         >>> code_from_checks.has_same_codespace_as(code_from_generators)
 ///         True
 ///
-#[pyclass(name = LinearCode)]
+#[pyclass(name = LinearCode, module="pyqec.pyqec")]
 #[text_signature = "(parity_check_matrix, generator_matrix, /)"]
 pub struct PyLinearCode {
     pub(crate) inner: LinearCode,
-    tag: Option<String>,
+    tag: String,
 }
 
 impl From<LinearCode> for PyLinearCode {
     fn from(inner: LinearCode) -> Self {
-        Self { inner, tag: None }
+        Self {
+            inner,
+            tag: String::from(""),
+        }
     }
 }
 
 #[pymethods]
 impl PyLinearCode {
     #[new]
+    #[args(parity_check_matrix = "None", generator_matrix = "None", tag = "None")]
     pub fn new(
         parity_check_matrix: Option<PyBinaryMatrix>,
         generator_matrix: Option<PyBinaryMatrix>,
         tag: Option<String>,
     ) -> PyResult<Self> {
+        let tag = tag.unwrap_or("".to_string());
         match (parity_check_matrix, generator_matrix) {
             (Some(h), Some(g)) => h.dot_with_matrix(&g.transposed()).and_then(|product| {
                 if product.is_zero() {
@@ -103,10 +111,17 @@ impl PyLinearCode {
                 inner: LinearCode::from_parity_check_matrix(g.inner),
                 tag,
             }),
-            (None, None) => Err(PyValueError::new_err(
-                "neither parity check matrix or generator matrix were specified",
-            )),
+            (None, None) => Ok(Self {
+                inner: LinearCode::empty(),
+                tag,
+            }),
         }
+    }
+
+    /// The tag of the code.
+    #[text_signature = "($self)"]
+    pub fn tag(&self) -> &str {
+        &self.tag
     }
 
     /// The number of bits in the code.
@@ -223,13 +238,33 @@ impl PyLinearCode {
     pub fn has_same_codespace_as(&self, other: PyRef<Self>) -> bool {
         self.inner.has_same_codespace_as(&other.inner)
     }
+
+    pub fn __setstate__(&mut self, py: Python, state: PyObject) -> PyResult<()> {
+        match state.extract::<&PyBytes>(py) {
+            Ok(s) => serde_pickle::from_slice(s.as_bytes())
+                .map(|(inner, tag)| {
+                    self.inner = inner;
+                    self.tag = tag;
+                })
+                .map_err(|error| PyValueError::new_err(error.to_string())),
+            Err(e) => Err(e),
+        }
+    }
+
+    pub fn __getstate__(&self, py: Python) -> PyResult<PyObject> {
+        Ok(PyBytes::new(
+            py,
+            &serde_pickle::to_vec(&(&self.inner, &self.tag), true).unwrap(),
+        )
+        .to_object(py))
+    }
 }
 
 #[pyproto]
 impl PyObjectProtocol for PyLinearCode {
     fn __repr__(&self) -> String {
-        let mut display = if let Some(tag) = self.tag.as_ref() {
-            format!("Tag = {}\n", tag)
+        let mut display = if self.tag != "" {
+            format!("Tag = {}\n", self.tag)
         } else {
             String::new()
         };

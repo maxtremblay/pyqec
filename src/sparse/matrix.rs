@@ -1,13 +1,16 @@
 use crate::sparse::PyBinaryVector;
+use bincode::{deserialize, serialize};
 use pyo3::class::basic::CompareOp;
 use pyo3::exceptions::{PyIndexError, PyNotImplementedError, PyValueError};
 use pyo3::prelude::*;
+use pyo3::types::PyBytes;
+use pyo3::ToPyObject;
 use pyo3::{PyMappingProtocol, PyNumberProtocol, PyObjectProtocol};
 use sparse_bin_mat::SparseBinMat;
 use std::collections::hash_map::DefaultHasher;
 use std::hash::{Hash, Hasher};
 
-#[pyclass(name = BinaryMatrix)]
+#[pyclass(name = BinaryMatrix, module="pyqec.pyqec")]
 #[derive(Debug, Clone)]
 pub struct PyBinaryMatrix {
     pub(crate) inner: SparseBinMat,
@@ -131,6 +134,20 @@ impl PyBinaryMatrix {
             .dot_with_matrix(&matrix.inner)
             .map(|result| result.into())
             .map_err(|error| PyValueError::new_err(error.to_string()))
+    }
+
+    pub fn __setstate__(&mut self, py: Python, state: PyObject) -> PyResult<()> {
+        match state.extract::<&PyBytes>(py) {
+            Ok(s) => {
+                self.inner = deserialize(s.as_bytes()).unwrap();
+                Ok(())
+            }
+            Err(e) => Err(e),
+        }
+    }
+
+    pub fn __getstate__(&self, py: Python) -> PyResult<PyObject> {
+        Ok(PyBytes::new(py, &serialize(&self.inner).unwrap()).to_object(py))
     }
 }
 

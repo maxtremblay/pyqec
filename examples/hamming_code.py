@@ -1,6 +1,6 @@
 from pyqec.sparse import BinaryMatrix, BinaryVector
 from pyqec.classical import LinearCode, BinarySymmetricChannel
-from pyqec.experiments import ClassicalDecodingExperiment
+from pyqec.experiments import ClassicalDecodingExperiment, Laboratory
 
 import matplotlib.pyplot as plt
 
@@ -12,7 +12,6 @@ parity_check_matrix = BinaryMatrix(
         [0, 2, 4, 6]
     ]
 )
-
 hamming_code = LinearCode(
     parity_check_matrix, 
     tag="Hamming code"
@@ -26,8 +25,7 @@ class HammingDecoder:
         syndrome = self.code.syndrome_of(message)
         bit = self.bit_to_flip(syndrome)
         if bit:
-            # To flip the bit, we addition a vector with a single
-            # 1 at the corresponding position.
+            # To flip the bit, we addition a vector with a single 1 at the corresponding position.
             return message + BinaryVector(7, [bit])
         else:
             # It is already a codeword.
@@ -48,30 +46,18 @@ class HammingDecoder:
 
 decoder = HammingDecoder(hamming_code)
 
-def run_experiment(probability):
+def build_experiment(probability):
     noise = BinarySymmetricChannel(probability)
-    experiment = ClassicalDecodingExperiment(hamming_code, decoder, noise)
-    return experiment.run_n_times(100)
+    return ClassicalDecodingExperiment(hamming_code, decoder, noise)
+
+labo = Laboratory(4)
 
 probabilities = [0.05 * i for i in range(1, 21)]
-results = [run_experiment(prob) for prob in probabilities] 
 
-failure_rates = [result.failure_rate() for result in results]
-uncertainties = [result.uncertainty() for result in results]
+for probability in probabilities:
+    labo.add_experiment(build_experiment(probability))
 
-plt.figure()
+results = labo.run_all_experiments_n_times(500)
 
-plt.xlabel("Error probability")
-plt.ylabel("Failure rate")
-plt.title("Performances of the Hamming code")
-
-plt.errorbar(
-    probabilities, 
-    failure_rates,
-    yerr=uncertainties,
-    marker="o",
-    markersize=4,
-)
-
-plt.savefig("nice_figure.pdf")
+results.plot("nice_figure.pdf")
 
