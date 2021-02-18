@@ -1,6 +1,8 @@
 use pyo3::class::basic::CompareOp;
 use pyo3::exceptions::{PyIndexError, PyNotImplementedError, PyValueError};
 use pyo3::prelude::*;
+use pyo3::types::PyBytes;
+use pyo3::ToPyObject;
 use pyo3::{PyIterProtocol, PyNumberProtocol, PyObjectProtocol, PySequenceProtocol};
 use sparse_bin_mat::SparseBinVec;
 use std::collections::hash_map::DefaultHasher;
@@ -77,6 +79,21 @@ impl PyBinaryVector {
         self.inner
             .dot_with(&other.inner)
             .map_err(|error| PyValueError::new_err(error.to_string()))
+    }
+
+    pub fn __setstate__(&mut self, py: Python, state: PyObject) -> PyResult<()> {
+        match state.extract::<&PyBytes>(py) {
+            Ok(s) => serde_pickle::from_slice(s.as_bytes())
+                .map(|inner| {
+                    self.inner = inner;
+                })
+                .map_err(|error| PyValueError::new_err(error.to_string())),
+            Err(e) => Err(e),
+        }
+    }
+
+    pub fn __getstate__(&self, py: Python) -> PyResult<PyObject> {
+        Ok(PyBytes::new(py, &serde_pickle::to_vec(&self.inner, true).unwrap()).to_object(py))
     }
 }
 
