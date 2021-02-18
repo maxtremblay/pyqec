@@ -1,6 +1,11 @@
-use pyo3::exceptions::PyValueError;
+use crate::sparse::PyBinaryVector;
+use pyo3::class::basic::CompareOp;
+use pyo3::exceptions::{PyIndexError, PyNotImplementedError, PyValueError};
 use pyo3::prelude::*;
+use pyo3::{PyNumberProtocol, PyObjectProtocol};
 use sparse_bin_mat::SparseBinMat;
+use std::collections::hash_map::DefaultHasher;
+use std::hash::{Hash, Hasher};
 
 #[pyclass(name = BinaryMatrix)]
 #[derive(Debug, Clone)]
@@ -38,23 +43,124 @@ impl PyBinaryMatrix {
         Self::from(SparseBinMat::empty())
     }
 
-    reimplement_directly!(number_of_columns, usize);
-    reimplement_directly!(number_of_rows, usize);
-    reimplement_directly!(dimension, (usize, usize));
-    reimplement_directly!(number_of_zeros, usize);
-    reimplement_directly!(number_of_ones, usize);
-    reimplement_directly!(is_empty, bool);
-    reimplement_directly!(is_zero, bool);
-    reimplement_directly!(rank, usize);
+    pub fn number_of_columns(&self) -> usize {
+        self.inner.number_of_columns()
+    }
 
-    wrap_and_reimplement!(transposed);
-    wrap_and_reimplement!(echelon_form);
-    wrap_and_reimplement!(nullspace);
+    pub fn number_of_rows(&self) -> usize {
+        self.inner.number_of_rows()
+    }
 
-    reimplement_with_indices!(is_zero_at, bool; row, column; usize, usize);
-    reimplement_with_indices!(is_one_at, bool; row, column; usize, usize);
+    pub fn dimensions(&self) -> (usize, usize) {
+        self.inner.dimension()
+    }
 
-    reimplement_operator!(horizontal_concat_with);
-    reimplement_operator!(vertical_concat_with);
-    reimplement_failable_operator!(dot_with_matrix);
+    pub fn number_of_zeros(&self) -> usize {
+        self.inner.number_of_zeros()
+    }
+
+    pub fn number_of_ones(&self) -> usize {
+        self.inner.number_of_ones()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.inner.is_empty()
+    }
+
+    pub fn is_zero(&self) -> bool {
+        self.inner.is_zero()
+    }
+
+    pub fn rank(&self) -> usize {
+        self.inner.rank()
+    }
+
+    pub fn transposed(&self) -> Self {
+        self.inner.transposed().into()
+    }
+
+    pub fn echelon_form(&self) -> Self {
+        self.inner.echelon_form().into()
+    }
+
+    pub fn nullspace(&self) -> Self {
+        self.inner.nullspace().into()
+    }
+
+    pub fn is_zero_at(&self, row: usize, column: usize) -> PyResult<bool> {
+        self.inner.is_zero_at(row, column).ok_or_else(|| {
+            PyIndexError::new_err(format!(
+                "row {} or column {} is out of bound for {} x {} matrix",
+                row,
+                column,
+                self.number_of_rows(),
+                self.number_of_columns()
+            ))
+        })
+    }
+
+    pub fn is_one_at(&self, row: usize, column: usize) -> PyResult<bool> {
+        self.inner.is_one_at(row, column).ok_or_else(|| {
+            PyIndexError::new_err(format!(
+                "row {} or column {} is out of bound for {} x {} matrix",
+                row,
+                column,
+                self.number_of_rows(),
+                self.number_of_columns()
+            ))
+        })
+    }
+
+    pub fn horizontal_concat_with(&self, other: &Self) -> Self {
+        self.inner.horizontal_concat_with(&other.inner).into()
+    }
+
+    pub fn vertical_concat_with(&self, other: &Self) -> Self {
+        self.inner.vertical_concat_with(&other.inner).into()
+    }
+
+    pub fn dot_with_vector(&self, vector: &PyBinaryVector) -> PyResult<PyBinaryVector> {
+        self.inner
+            .dot_with_vector(&vector.inner)
+            .map(|result| result.into())
+            .map_err(|error| PyValueError::new_err(error.to_string()))
+    }
+
+    pub fn dot_with_matrix(&self, matrix: &PyBinaryMatrix) -> PyResult<PyBinaryMatrix> {
+        self.inner
+            .dot_with_matrix(&matrix.inner)
+            .map(|result| result.into())
+            .map_err(|error| PyValueError::new_err(error.to_string()))
+    }
+}
+
+#[pyproto]
+impl PyObjectProtocol for PyBinaryMatrix {
+    fn __repr__(&self) -> String {
+        self.inner.to_string()
+    }
+
+    fn __richcmp__(&self, other: PyRef<Self>, op: CompareOp) -> PyResult<bool> {
+        match op {
+            CompareOp::Eq => Ok(&self.inner == &other.inner),
+            CompareOp::Ne => Ok(&self.inner != &other.inner),
+            _ => Err(PyNotImplementedError::new_err("not implemented")),
+        }
+    }
+
+    fn __hash__(&self) -> u64 {
+        let mut hasher = DefaultHasher::new();
+        self.inner.hash(&mut hasher);
+        hasher.finish()
+    }
+}
+
+#[pyproto]
+impl PyNumberProtocol for PyBinaryMatrix {
+    fn __add__(lhs: PyRef<Self>, rhs: PyRef<Self>) -> PyResult<Self> {
+        lhs.inner
+            .bitwise_xor_with(&rhs.inner)
+            .map(|matrix| matrix.into())
+            .map_err(|error| PyValueError::new_err(error.to_string()))
+    }
 }

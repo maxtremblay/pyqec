@@ -86,7 +86,6 @@ class ClassicalDecodingExperiment:
                 "dimension": self.code.dimension(),
                 "number_of_checks": self.code.number_of_checks(),
                 "decoder": self.decoder.to_json(),
-                ""
             }
         )
         
