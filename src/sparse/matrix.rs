@@ -25,6 +25,7 @@ impl From<SparseBinMat> for PyBinaryMatrix {
 #[pymethods]
 impl PyBinaryMatrix {
     #[new]
+    #[args(number_of_columns = "0", rows = "Vec::new()")]
     pub fn new(number_of_columns: usize, rows: Vec<Vec<usize>>) -> PyResult<Self> {
         let matrix = SparseBinMat::try_new(number_of_columns, rows)
             .map_err(|error| PyValueError::new_err(error.to_string()))?;

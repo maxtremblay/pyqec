@@ -8,7 +8,7 @@ use sparse_bin_mat::SparseBinVec;
 use std::collections::hash_map::DefaultHasher;
 use std::hash::{Hash, Hasher};
 
-#[pyclass(name = BinaryVector)]
+#[pyclass(name = BinaryVector, module="pyqec.pyqec")]
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct PyBinaryVector {
     pub(crate) inner: SparseBinVec,
@@ -23,6 +23,7 @@ impl From<SparseBinVec> for PyBinaryVector {
 #[pymethods]
 impl PyBinaryVector {
     #[new]
+    #[args(length = "0", non_trivial_positions = "Vec::new()")]
     fn new(length: usize, non_trivial_positions: Vec<usize>) -> PyResult<Self> {
         SparseBinVec::try_new(length, non_trivial_positions)
             .map(|vector| Self::from(vector))
