@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyqec"
-version = "0.5.2"
+version = "0.5.3"
 description = ""
 authors = ["maxtremblay <matrem@protonmail.com>"]
 
