@@ -24,6 +24,11 @@ you only need to run
 pip install pyqec
 ```
 
+The library is currently is rapid development.
+You should always check that you are running the most up-to-date version.
+Else,
+the information in this guide maybe be wrong.
+
 ## Open source software
 
 `pyqec` is an open source software
