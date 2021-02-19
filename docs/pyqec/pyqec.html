@@ -29,10 +29,178 @@
 <section>
 </section>
 <section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="pyqec.pyqec.random_regular_code"><code class="name flex">
+<span>def <span class="ident">random_regular_code</span></span>(<span>...)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Samples a random regular codes.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>block_size</code></strong> :&ensp;<code>int</code>, default <code>= 4</code></dt>
+<dd>The number of bits in the code.</dd>
+<dt><strong><code>number_of_checks</code></strong> :&ensp;<code>int</code>, default <code>= 3</code></dt>
+<dd>The number of checks in the code.</dd>
+<dt><strong><code>bit_degree</code></strong> :&ensp;<code>int</code>, default <code>= 3</code></dt>
+<dd>The number of checks connected to each bit.</dd>
+<dt><strong><code>check_degree</code></strong> :&ensp;<code>int</code>, default <code>= 4</code></dt>
+<dd>The number of bits connected to each check.</dd>
+<dt><strong><code>random_seed</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>A seed to feed the random number generator.
+By default, the rng is initialize from entropy.</dd>
+<dt><strong><code>tag</code></strong> :&ensp;<code>string, option</code></dt>
+<dd>An identifier for the code.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code><a title="pyqec.pyqec.LinearCode" href="#pyqec.pyqec.LinearCode">LinearCode</a></code></dt>
+<dd>A random linear code with the given parameters.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>ValueError</code></dt>
+<dd>If <code>block_size * bit_degree != number_of_checks * check_degree</code>.</dd>
+</dl></div>
+</dd>
+</dl>
 </section>
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
+<dt id="pyqec.pyqec.BinaryMatrix"><code class="flex name class">
+<span>class <span class="ident">BinaryMatrix</span></span>
+<span>(</span><span>...)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<h3>Static methods</h3>
+<dl>
+<dt id="pyqec.pyqec.BinaryMatrix.empty"><code class="name flex">
+<span>def <span class="ident">empty</span></span>(<span>...)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="pyqec.pyqec.BinaryMatrix.identity"><code class="name flex">
+<span>def <span class="ident">identity</span></span>(<span>...)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="pyqec.pyqec.BinaryMatrix.zeros"><code class="name flex">
+<span>def <span class="ident">zeros</span></span>(<span>...)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="pyqec.pyqec.BinaryMatrix.dimensions"><code class="name flex">
+<span>def <span class="ident">dimensions</span></span>(<span>...)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="pyqec.pyqec.BinaryMatrix.dot_with_matrix"><code class="name flex">
+<span>def <span class="ident">dot_with_matrix</span></span>(<span>...)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="pyqec.pyqec.BinaryMatrix.dot_with_vector"><code class="name flex">
+<span>def <span class="ident">dot_with_vector</span></span>(<span>...)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="pyqec.pyqec.BinaryMatrix.echelon_form"><code class="name flex">
+<span>def <span class="ident">echelon_form</span></span>(<span>...)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="pyqec.pyqec.BinaryMatrix.horizontal_concat_with"><code class="name flex">
+<span>def <span class="ident">horizontal_concat_with</span></span>(<span>...)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="pyqec.pyqec.BinaryMatrix.is_empty"><code class="name flex">
+<span>def <span class="ident">is_empty</span></span>(<span>...)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="pyqec.pyqec.BinaryMatrix.is_one_at"><code class="name flex">
+<span>def <span class="ident">is_one_at</span></span>(<span>...)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="pyqec.pyqec.BinaryMatrix.is_zero"><code class="name flex">
+<span>def <span class="ident">is_zero</span></span>(<span>...)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="pyqec.pyqec.BinaryMatrix.is_zero_at"><code class="name flex">
+<span>def <span class="ident">is_zero_at</span></span>(<span>...)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="pyqec.pyqec.BinaryMatrix.nullspace"><code class="name flex">
+<span>def <span class="ident">nullspace</span></span>(<span>...)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="pyqec.pyqec.BinaryMatrix.number_of_columns"><code class="name flex">
+<span>def <span class="ident">number_of_columns</span></span>(<span>...)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="pyqec.pyqec.BinaryMatrix.number_of_ones"><code class="name flex">
+<span>def <span class="ident">number_of_ones</span></span>(<span>...)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="pyqec.pyqec.BinaryMatrix.number_of_rows"><code class="name flex">
+<span>def <span class="ident">number_of_rows</span></span>(<span>...)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="pyqec.pyqec.BinaryMatrix.number_of_zeros"><code class="name flex">
+<span>def <span class="ident">number_of_zeros</span></span>(<span>...)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="pyqec.pyqec.BinaryMatrix.rank"><code class="name flex">
+<span>def <span class="ident">rank</span></span>(<span>...)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="pyqec.pyqec.BinaryMatrix.transposed"><code class="name flex">
+<span>def <span class="ident">transposed</span></span>(<span>...)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="pyqec.pyqec.BinaryMatrix.vertical_concat_with"><code class="name flex">
+<span>def <span class="ident">vertical_concat_with</span></span>(<span>...)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
 <dt id="pyqec.pyqec.BinarySymmetricChannel"><code class="flex name class">
 <span>class <span class="ident">BinarySymmetricChannel</span></span>
 <span>(</span><span>...)</span>
@@ -57,6 +225,73 @@ of each bits according to a given error probability.</p></div>
 </dd>
 </dl>
 </dd>
+<dt id="pyqec.pyqec.BinaryVector"><code class="flex name class">
+<span>class <span class="ident">BinaryVector</span></span>
+<span>(</span><span>...)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<h3>Static methods</h3>
+<dl>
+<dt id="pyqec.pyqec.BinaryVector.empty"><code class="name flex">
+<span>def <span class="ident">empty</span></span>(<span>...)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="pyqec.pyqec.BinaryVector.zeros"><code class="name flex">
+<span>def <span class="ident">zeros</span></span>(<span>...)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="pyqec.pyqec.BinaryVector.concat"><code class="name flex">
+<span>def <span class="ident">concat</span></span>(<span>...)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="pyqec.pyqec.BinaryVector.dot_with"><code class="name flex">
+<span>def <span class="ident">dot_with</span></span>(<span>...)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="pyqec.pyqec.BinaryVector.is_empty"><code class="name flex">
+<span>def <span class="ident">is_empty</span></span>(<span>...)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="pyqec.pyqec.BinaryVector.is_one_at"><code class="name flex">
+<span>def <span class="ident">is_one_at</span></span>(<span>...)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="pyqec.pyqec.BinaryVector.is_zero"><code class="name flex">
+<span>def <span class="ident">is_zero</span></span>(<span>...)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="pyqec.pyqec.BinaryVector.is_zero_at"><code class="name flex">
+<span>def <span class="ident">is_zero_at</span></span>(<span>...)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="pyqec.pyqec.BinaryVector.weight"><code class="name flex">
+<span>def <span class="ident">weight</span></span>(<span>...)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
 <dt id="pyqec.pyqec.FlipDecoder"><code class="flex name class">
 <span>class <span class="ident">FlipDecoder</span></span>
 <span>(</span><span>...)</span>
@@ -71,10 +306,17 @@ of each bits according to a given error probability.</p></div>
 <dd>
 <div class="desc"></div>
 </dd>
+<dt id="pyqec.pyqec.FlipDecoder.to_json"><code class="name flex">
+<span>def <span class="ident">to_json</span></span>(<span>...)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
 </dl>
 </dd>
 <dt id="pyqec.pyqec.LinearCode"><code class="flex name class">
 <span>class <span class="ident">LinearCode</span></span>
+<span>(</span><span>parity_check_matrix, generator_matrix, /)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>An implementation of linear codes optimized for LDPC codes.</p>
@@ -109,113 +351,10 @@ False
 &gt;&gt;&gt; code_from_checks.has_same_codespace_as(code_from_generators)
 True
 </code></pre></div>
-<h3>Static methods</h3>
-<dl>
-<dt id="pyqec.pyqec.LinearCode.from_checks"><code class="name flex">
-<span>def <span class="ident">from_checks</span></span>(<span>block_size, checks)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Constructs a LinearCode from a parity check matrix.
-A parity check matrix <code>H</code> has the property that
-<code>Hx = 0</code> for all codeword x.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>block_size</code></strong> :&ensp;<code>int</code></dt>
-<dd>The number of bits in the code.</dd>
-<dt><strong><code>checks</code></strong> :&ensp;<code>list</code> of <code>list</code> of <code>int</code></dt>
-<dd>A list of checks where each check is
-represented by the list of positions where this check has value 1.</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code><a title="pyqec.pyqec.LinearCode" href="#pyqec.pyqec.LinearCode">LinearCode</a></code></dt>
-<dd>The linear code with the given checks.</dd>
-</dl>
-<h2 id="raises">Raises</h2>
-<dl>
-<dt><code>ValueError</code></dt>
-<dd>If a check has a position greater
-or equal to the block size.</dd>
-</dl>
-<h2 id="example">Example</h2>
-<p>A 3 bits repetition code.</p>
-<pre><code>code = LinearCode.from_checks(3, [[0, 1], [1, 2]])
-</code></pre></div>
-</dd>
-<dt id="pyqec.pyqec.LinearCode.from_generators"><code class="name flex">
-<span>def <span class="ident">from_generators</span></span>(<span>block_size, generators)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Constructs a LinearCode from a generator matrix.
-A generator matrix <code>G</code> has the property that
-for any codeword <code>x</code> we have <code>x = G^T y</code>
-where <code>y</code> is the unencoded bitstring.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>block_size</code></strong> :&ensp;<code>int</code></dt>
-<dd>The number of bits in the code.</dd>
-<dt><strong><code>generators</code></strong> :&ensp;<code>list</code> of <code>list</code> of <code>int</code></dt>
-<dd>A list of codeword generators
-where each generator is represented by the
-list of positions where this generator has value 1.</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code><a title="pyqec.pyqec.LinearCode" href="#pyqec.pyqec.LinearCode">LinearCode</a></code></dt>
-<dd>The linear code with the given codeword generators.</dd>
-</dl>
-<h2 id="raises">Raises</h2>
-<dl>
-<dt><code>ValueError</code></dt>
-<dd>If a generator has a position greater
-or equal to the block size.</dd>
-</dl>
-<h2 id="example">Example</h2>
-<p>A 3 bits repetition code.</p>
-<pre><code>code = LinearCode.from_generators(3, [[0, 1, 2]])
-</code></pre></div>
-</dd>
-<dt id="pyqec.pyqec.LinearCode.random_regular_code"><code class="name flex">
-<span>def <span class="ident">random_regular_code</span></span>(<span>block_size, number_of_checks, bit_degree, check_degree, random_seed)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Samples a random regular codes.</p>
-<h2 id="parameters">Parameters</h2>
-<dl>
-<dt><strong><code>block_size</code></strong> :&ensp;<code>int</code>, default <code>= 4</code></dt>
-<dd>The number of bits in the code.</dd>
-<dt><strong><code>number_of_checks</code></strong> :&ensp;<code>int</code>, default <code>= 3</code></dt>
-<dd>The number of checks in the code.</dd>
-<dt><strong><code>bit_degree</code></strong> :&ensp;<code>int</code>, default <code>= 3</code></dt>
-<dd>The number of checks connected to each bit.</dd>
-<dt><strong><code>check_degree</code></strong> :&ensp;<code>int</code>, default <code>= 4</code></dt>
-<dd>The number of bits connected to each check.</dd>
-<dt><strong><code>random_seed</code></strong> :&ensp;<code>int</code>, optional</dt>
-<dd>A seed to feed the random number generator.
-By default, the rng is initialize from entropy.</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code><a title="pyqec.pyqec.LinearCode" href="#pyqec.pyqec.LinearCode">LinearCode</a></code></dt>
-<dd>A random linear code with the given parameters.</dd>
-</dl>
-<h2 id="raises">Raises</h2>
-<dl>
-<dt><code>ValueError</code></dt>
-<dd>If <code>block_size * bit_degree != number_of_checks * check_degree</code>.</dd>
-</dl></div>
-</dd>
-</dl>
 <h3>Methods</h3>
 <dl>
-<dt id="pyqec.pyqec.LinearCode.block_size"><code class="name flex">
-<span>def <span class="ident">block_size</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>The number of bits in the code.</p></div>
-</dd>
 <dt id="pyqec.pyqec.LinearCode.dimension"><code class="name flex">
-<span>def <span class="ident">dimension</span></span>(<span>self)</span>
+<span>def <span class="ident">dimension</span></span>(<span>self, /)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>The number of encoded qubits.</p></div>
@@ -239,13 +378,8 @@ By default, the rng is initialize from entropy.</dd>
 <h2 id="returns">Returns</h2>
 <dl>
 <dt><code>bool</code></dt>
-<dd>True if the message has a zero syndrome and False otherwise.</dd>
-</dl>
-<h2 id="raises">Raises</h2>
-<dl>
-<dt><code>ValueError</code></dt>
-<dd>If a position in the message is greater or equal to the block size
-of the code.</dd>
+<dd>True if the message has the right length and a zero syndrome
+or False otherwise.</dd>
 </dl></div>
 </dd>
 <dt id="pyqec.pyqec.LinearCode.has_same_codespace_as"><code class="name flex">
@@ -265,6 +399,12 @@ as this code.</p>
 <dd>True if other codewords are exactly the same
 as this code codewords.</dd>
 </dl></div>
+</dd>
+<dt id="pyqec.pyqec.LinearCode.length"><code class="name flex">
+<span>def <span class="ident">length</span></span>(<span>self, /)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>The number of bits in the code.</p></div>
 </dd>
 <dt id="pyqec.pyqec.LinearCode.minimal_distance"><code class="name flex">
 <span>def <span class="ident">minimal_distance</span></span>(<span>self)</span>
@@ -320,9 +460,14 @@ the input message.</dd>
 <h2 id="raises">Raises</h2>
 <dl>
 <dt><code>ValueError</code></dt>
-<dd>If a position in the message is greater or equal to the block size
-of the code.</dd>
+<dd>If a position in the message is greater or equal to the length of the code.</dd>
 </dl></div>
+</dd>
+<dt id="pyqec.pyqec.LinearCode.tag"><code class="name flex">
+<span>def <span class="ident">tag</span></span>(<span>self, /)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>The tag of the code.</p></div>
 </dd>
 </dl>
 </dd>
@@ -340,8 +485,38 @@ of the code.</dd>
 <li><code><a title="pyqec" href="index.html">pyqec</a></code></li>
 </ul>
 </li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="pyqec.pyqec.random_regular_code" href="#pyqec.pyqec.random_regular_code">random_regular_code</a></code></li>
+</ul>
+</li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
+<li>
+<h4><code><a title="pyqec.pyqec.BinaryMatrix" href="#pyqec.pyqec.BinaryMatrix">BinaryMatrix</a></code></h4>
+<ul class="">
+<li><code><a title="pyqec.pyqec.BinaryMatrix.dimensions" href="#pyqec.pyqec.BinaryMatrix.dimensions">dimensions</a></code></li>
+<li><code><a title="pyqec.pyqec.BinaryMatrix.dot_with_matrix" href="#pyqec.pyqec.BinaryMatrix.dot_with_matrix">dot_with_matrix</a></code></li>
+<li><code><a title="pyqec.pyqec.BinaryMatrix.dot_with_vector" href="#pyqec.pyqec.BinaryMatrix.dot_with_vector">dot_with_vector</a></code></li>
+<li><code><a title="pyqec.pyqec.BinaryMatrix.echelon_form" href="#pyqec.pyqec.BinaryMatrix.echelon_form">echelon_form</a></code></li>
+<li><code><a title="pyqec.pyqec.BinaryMatrix.empty" href="#pyqec.pyqec.BinaryMatrix.empty">empty</a></code></li>
+<li><code><a title="pyqec.pyqec.BinaryMatrix.horizontal_concat_with" href="#pyqec.pyqec.BinaryMatrix.horizontal_concat_with">horizontal_concat_with</a></code></li>
+<li><code><a title="pyqec.pyqec.BinaryMatrix.identity" href="#pyqec.pyqec.BinaryMatrix.identity">identity</a></code></li>
+<li><code><a title="pyqec.pyqec.BinaryMatrix.is_empty" href="#pyqec.pyqec.BinaryMatrix.is_empty">is_empty</a></code></li>
+<li><code><a title="pyqec.pyqec.BinaryMatrix.is_one_at" href="#pyqec.pyqec.BinaryMatrix.is_one_at">is_one_at</a></code></li>
+<li><code><a title="pyqec.pyqec.BinaryMatrix.is_zero" href="#pyqec.pyqec.BinaryMatrix.is_zero">is_zero</a></code></li>
+<li><code><a title="pyqec.pyqec.BinaryMatrix.is_zero_at" href="#pyqec.pyqec.BinaryMatrix.is_zero_at">is_zero_at</a></code></li>
+<li><code><a title="pyqec.pyqec.BinaryMatrix.nullspace" href="#pyqec.pyqec.BinaryMatrix.nullspace">nullspace</a></code></li>
+<li><code><a title="pyqec.pyqec.BinaryMatrix.number_of_columns" href="#pyqec.pyqec.BinaryMatrix.number_of_columns">number_of_columns</a></code></li>
+<li><code><a title="pyqec.pyqec.BinaryMatrix.number_of_ones" href="#pyqec.pyqec.BinaryMatrix.number_of_ones">number_of_ones</a></code></li>
+<li><code><a title="pyqec.pyqec.BinaryMatrix.number_of_rows" href="#pyqec.pyqec.BinaryMatrix.number_of_rows">number_of_rows</a></code></li>
+<li><code><a title="pyqec.pyqec.BinaryMatrix.number_of_zeros" href="#pyqec.pyqec.BinaryMatrix.number_of_zeros">number_of_zeros</a></code></li>
+<li><code><a title="pyqec.pyqec.BinaryMatrix.rank" href="#pyqec.pyqec.BinaryMatrix.rank">rank</a></code></li>
+<li><code><a title="pyqec.pyqec.BinaryMatrix.transposed" href="#pyqec.pyqec.BinaryMatrix.transposed">transposed</a></code></li>
+<li><code><a title="pyqec.pyqec.BinaryMatrix.vertical_concat_with" href="#pyqec.pyqec.BinaryMatrix.vertical_concat_with">vertical_concat_with</a></code></li>
+<li><code><a title="pyqec.pyqec.BinaryMatrix.zeros" href="#pyqec.pyqec.BinaryMatrix.zeros">zeros</a></code></li>
+</ul>
+</li>
 <li>
 <h4><code><a title="pyqec.pyqec.BinarySymmetricChannel" href="#pyqec.pyqec.BinarySymmetricChannel">BinarySymmetricChannel</a></code></h4>
 <ul class="">
@@ -350,27 +525,40 @@ of the code.</dd>
 </ul>
 </li>
 <li>
+<h4><code><a title="pyqec.pyqec.BinaryVector" href="#pyqec.pyqec.BinaryVector">BinaryVector</a></code></h4>
+<ul class="two-column">
+<li><code><a title="pyqec.pyqec.BinaryVector.concat" href="#pyqec.pyqec.BinaryVector.concat">concat</a></code></li>
+<li><code><a title="pyqec.pyqec.BinaryVector.dot_with" href="#pyqec.pyqec.BinaryVector.dot_with">dot_with</a></code></li>
+<li><code><a title="pyqec.pyqec.BinaryVector.empty" href="#pyqec.pyqec.BinaryVector.empty">empty</a></code></li>
+<li><code><a title="pyqec.pyqec.BinaryVector.is_empty" href="#pyqec.pyqec.BinaryVector.is_empty">is_empty</a></code></li>
+<li><code><a title="pyqec.pyqec.BinaryVector.is_one_at" href="#pyqec.pyqec.BinaryVector.is_one_at">is_one_at</a></code></li>
+<li><code><a title="pyqec.pyqec.BinaryVector.is_zero" href="#pyqec.pyqec.BinaryVector.is_zero">is_zero</a></code></li>
+<li><code><a title="pyqec.pyqec.BinaryVector.is_zero_at" href="#pyqec.pyqec.BinaryVector.is_zero_at">is_zero_at</a></code></li>
+<li><code><a title="pyqec.pyqec.BinaryVector.weight" href="#pyqec.pyqec.BinaryVector.weight">weight</a></code></li>
+<li><code><a title="pyqec.pyqec.BinaryVector.zeros" href="#pyqec.pyqec.BinaryVector.zeros">zeros</a></code></li>
+</ul>
+</li>
+<li>
 <h4><code><a title="pyqec.pyqec.FlipDecoder" href="#pyqec.pyqec.FlipDecoder">FlipDecoder</a></code></h4>
 <ul class="">
 <li><code><a title="pyqec.pyqec.FlipDecoder.decode" href="#pyqec.pyqec.FlipDecoder.decode">decode</a></code></li>
+<li><code><a title="pyqec.pyqec.FlipDecoder.to_json" href="#pyqec.pyqec.FlipDecoder.to_json">to_json</a></code></li>
 </ul>
 </li>
 <li>
 <h4><code><a title="pyqec.pyqec.LinearCode" href="#pyqec.pyqec.LinearCode">LinearCode</a></code></h4>
 <ul class="">
-<li><code><a title="pyqec.pyqec.LinearCode.block_size" href="#pyqec.pyqec.LinearCode.block_size">block_size</a></code></li>
 <li><code><a title="pyqec.pyqec.LinearCode.dimension" href="#pyqec.pyqec.LinearCode.dimension">dimension</a></code></li>
-<li><code><a title="pyqec.pyqec.LinearCode.from_checks" href="#pyqec.pyqec.LinearCode.from_checks">from_checks</a></code></li>
-<li><code><a title="pyqec.pyqec.LinearCode.from_generators" href="#pyqec.pyqec.LinearCode.from_generators">from_generators</a></code></li>
 <li><code><a title="pyqec.pyqec.LinearCode.generator_matrix" href="#pyqec.pyqec.LinearCode.generator_matrix">generator_matrix</a></code></li>
 <li><code><a title="pyqec.pyqec.LinearCode.has_codeword" href="#pyqec.pyqec.LinearCode.has_codeword">has_codeword</a></code></li>
 <li><code><a title="pyqec.pyqec.LinearCode.has_same_codespace_as" href="#pyqec.pyqec.LinearCode.has_same_codespace_as">has_same_codespace_as</a></code></li>
+<li><code><a title="pyqec.pyqec.LinearCode.length" href="#pyqec.pyqec.LinearCode.length">length</a></code></li>
 <li><code><a title="pyqec.pyqec.LinearCode.minimal_distance" href="#pyqec.pyqec.LinearCode.minimal_distance">minimal_distance</a></code></li>
 <li><code><a title="pyqec.pyqec.LinearCode.number_of_checks" href="#pyqec.pyqec.LinearCode.number_of_checks">number_of_checks</a></code></li>
 <li><code><a title="pyqec.pyqec.LinearCode.number_of_generators" href="#pyqec.pyqec.LinearCode.number_of_generators">number_of_generators</a></code></li>
 <li><code><a title="pyqec.pyqec.LinearCode.parity_check_matrix" href="#pyqec.pyqec.LinearCode.parity_check_matrix">parity_check_matrix</a></code></li>
-<li><code><a title="pyqec.pyqec.LinearCode.random_regular_code" href="#pyqec.pyqec.LinearCode.random_regular_code">random_regular_code</a></code></li>
 <li><code><a title="pyqec.pyqec.LinearCode.syndrome_of" href="#pyqec.pyqec.LinearCode.syndrome_of">syndrome_of</a></code></li>
+<li><code><a title="pyqec.pyqec.LinearCode.tag" href="#pyqec.pyqec.LinearCode.tag">tag</a></code></li>
 </ul>
 </li>
 </ul>
