@@ -63,6 +63,13 @@ class Results:
             tags_to_results[tag].statistics.append(stat)
         return tags_to_results
 
+    def filter_by_tag(self, condition):
+        def condition_on_tuple(data):
+            return condition(data[0])
+        filtered = filter(condition_on_tuple, zip(self.tags, self.probabilities, self.statistics))
+        tags, probabilities, statistics = list(zip(*filtered))
+        return Results(tags, probabilities, statistics)
+
     def failure_rates(self):
         return [stat.failure_rate() for stat in self.statistics]
 
