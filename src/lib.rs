@@ -50,14 +50,7 @@ fn pyqec(_py: Python, module: &PyModule) -> PyResult<()> {
     /// ------
     /// ValueError
     ///     If `block_size * bit_degree != number_of_checks * check_degree`.
-    #[pyfn(
-        module,
-        "random_regular_code",
-        block_size = 4,
-        number_of_checks = 3,
-        bit_degree = 3,
-        check_degree = 4
-    )]
+    #[pyfn(module, "random_regular_code")]
     fn py_random_regular_code(
         block_size: usize,
         number_of_checks: usize,
