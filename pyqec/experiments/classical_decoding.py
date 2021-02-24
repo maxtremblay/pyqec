@@ -42,3 +42,4 @@ class ClassicalDecodingExperiment:
 
     def tag(self):
         return self.code.tag()
+
