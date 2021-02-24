@@ -1,6 +1,6 @@
 [package]
 name = "pyqec"
-version = "0.5.5"
+version = "0.5.6"
 authors = ["maxtremblay <matrem@protonmail.com>"]
 edition = "2018"
 license = "MIT"
