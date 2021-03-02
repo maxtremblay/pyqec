@@ -6,8 +6,7 @@ import matplotlib.pyplot as plt
 
 parity_check_matrix = BinaryMatrix(
     7,
-    [
-        [3, 4, 5, 6],
+    [ [3, 4, 5, 6],
         [1, 2, 5, 6],
         [0, 2, 4, 6]
     ]
@@ -36,7 +35,7 @@ class HammingDecoder:
         for unsatisfied_position in syndrome:
             # The smallest position correspond 
             # to the highest power of 2.
-            bit_to_flip += 2**(len(syndrome) - 1 - unsatisfied_position)
+            bit_to_flip += 2**(syndrome.len() - 1 - unsatisfied_position)
         if bit_to_flip > 0:
             # We offset because binary vector are 0-indexed.
             return bit_to_flip - 1 
