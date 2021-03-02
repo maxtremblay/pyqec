@@ -86,7 +86,7 @@ impl PyBinaryVector {
         })
     }
 
-    pub fn non_trivial_element(&self, index: usize) -> PyResult<usize> {
+    pub fn non_trivial_position(&self, index: usize) -> PyResult<usize> {
         self.non_trivial_positions()
             .get(index)
             .cloned()
