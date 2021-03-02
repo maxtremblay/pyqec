@@ -86,6 +86,19 @@ impl PyBinaryVector {
         })
     }
 
+    pub fn non_trivial_element(&self, index: usize) -> PyResult<usize> {
+        self.non_trivial_positions()
+            .get(index)
+            .cloned()
+            .ok_or_else(|| {
+                PyIndexError::new_err(format!(
+                    "invalid index {} for vector of weight {}",
+                    index,
+                    self.weight(),
+                ))
+            })
+    }
+
     pub fn concat(&self, other: PyRef<Self>) -> Self {
         self.inner.concat(&other.inner).into()
     }
