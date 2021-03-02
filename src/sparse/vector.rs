@@ -3,7 +3,7 @@ use pyo3::exceptions::{PyIndexError, PyNotImplementedError, PyValueError};
 use pyo3::prelude::*;
 use pyo3::types::PyBytes;
 use pyo3::ToPyObject;
-use pyo3::{PyIterProtocol, PyNumberProtocol, PyObjectProtocol, PySequenceProtocol};
+use pyo3::{PyIterProtocol, PyNumberProtocol, PyObjectProtocol};
 use sparse_bin_mat::SparseBinVec;
 use std::collections::hash_map::DefaultHasher;
 use std::hash::{Hash, Hasher};
@@ -40,6 +40,10 @@ impl PyBinaryVector {
         Self::from(SparseBinVec::empty())
     }
 
+    pub fn len(&self) -> usize {
+        self.inner.len()
+    }
+
     pub fn weight(&self) -> usize {
         self.inner.weight()
     }
@@ -68,6 +72,16 @@ impl PyBinaryVector {
                 "invalid index {} for vector of length {}",
                 index,
                 self.inner.len()
+            ))
+        })
+    }
+
+    pub fn element(&self, index: usize) -> PyResult<u8> {
+        self.inner.get(index).ok_or_else(|| {
+            PyIndexError::new_err(format!(
+                "invalid index {} for vector of length {}",
+                index,
+                self.len()
             ))
         })
     }
@@ -132,31 +146,6 @@ impl PyNumberProtocol for PyBinaryVector {
             .bitwise_xor_with(&rhs.inner)
             .map(|vector| vector.into())
             .map_err(|error| PyValueError::new_err(error.to_string()))
-    }
-}
-
-#[pyproto]
-impl PySequenceProtocol for PyBinaryVector {
-    fn __len__(&self) -> usize {
-        self.inner.len()
-    }
-
-    fn __getitem__(&'p self, idx: isize) -> PyResult<u8> {
-        if idx < -1 * self.__len__() as isize {
-            return Err(PyIndexError::new_err(format!(
-                "invalid index {} for vector of length {}",
-                idx,
-                self.__len__()
-            )));
-        }
-        let idx = if idx < 0 { -1 * idx } else { idx } as usize;
-        self.inner.get(idx).ok_or_else(|| {
-            PyIndexError::new_err(format!(
-                "invalid index {} for vector of length {}",
-                idx,
-                self.__len__()
-            ))
-        })
     }
 }
 
