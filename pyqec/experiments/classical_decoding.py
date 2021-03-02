@@ -41,5 +41,19 @@ class ClassicalDecodingExperiment:
         return self.noise.error_probability()
 
     def tag(self):
-        return self.code.tag()
-
+        try:
+            code_tag = self.code.tag()
+        except:
+            code_tag = None
+        try:
+            decoder_tag = self.decoder.tag()
+        except:
+            decoder_tag = None
+        if code_tag and decoder_tag:
+            return f"{code_tag} + {decoder_tag}"
+        elif code_tag:
+            return code_tag
+        elif decoder_tag:
+            return decoder_tag
+        else:
+            return ""

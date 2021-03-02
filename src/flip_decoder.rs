@@ -1,30 +1,31 @@
-use crate::PyLinearCode;
+use crate::{PyBinaryVector, PyLinearCode};
 use ldpc::decoders::FlipDecoder;
-use ldpc::{LinearCode, SparseBinVec};
-use pyo3::exceptions::PyValueError;
+use ldpc::LinearCode;
 use pyo3::prelude::*;
-use pyo3::PySequenceProtocol;
 
 #[pyclass(name = FlipDecoder)]
 pub struct PyFlipDecoder {
     pub(crate) inner: FlipDecoder<LinearCode>,
-    block_size: usize,
+    tag: String,
 }
 
 #[pymethods]
 impl PyFlipDecoder {
     #[new]
-    pub fn new(code: &PyLinearCode) -> PyFlipDecoder {
+    #[args(tag = "String::from(\"FLIP\")")]
+    pub fn new(code: &PyLinearCode, tag: String) -> PyFlipDecoder {
         PyFlipDecoder {
             inner: FlipDecoder::new(code.inner.clone()),
-            block_size: code.__len__(),
+            tag,
         }
     }
 
-    pub fn decode(&self, message: Vec<usize>) -> PyResult<Vec<usize>> {
-        SparseBinVec::try_new(self.block_size, message)
-            .map(|message| self.inner.decode(&message).to_positions_vec())
-            .map_err(|error| PyValueError::new_err(error.to_string()))
+    pub fn decode(&self, message: &PyBinaryVector) -> PyResult<PyBinaryVector> {
+        Ok(self.inner.decode(&message.inner).into())
+    }
+
+    pub fn tag(&self) -> &str {
+        self.tag.as_str()
     }
 
     pub fn to_json(&self) -> String {

@@ -23,6 +23,9 @@ class MajorityDecoder:
         else:
             return self.zero_codeword
 
+    def tag(self):
+        return "DECODER"
+
 def build_experiment(code_length, probability):
     code = repetition_code(code_length)
     decoder = MajorityDecoder(code)
@@ -37,4 +40,3 @@ for length in range(1, 10, 2):
 
 results = laboratory.run_all_experiments_n_times(1000)
 results.plot("repetition_codes.pdf")
-results.filter_by_tag(lambda tag: int(tag[-1]) < 6).plot("only_smallest.pdf")
