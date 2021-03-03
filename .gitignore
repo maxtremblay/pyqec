@@ -3,5 +3,6 @@ Cargo.lock
 /venv
 poetry.lock
 pyqec/__pycache__
+tests/__pycache__
 pyqec/pyqec.cpython-39-x86_64-linux-gnu.so
-nice_figure.pdf
+*.pdf
