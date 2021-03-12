@@ -6,7 +6,7 @@ class ClassicalDecodingExperiment:
         self.code = code
         self.decoder = decoder
         self.noise = noise
-
+    
     def run_once(self):
         """
             Run a single decoding simulation assuming a zero codeword.
@@ -30,7 +30,7 @@ class ClassicalDecodingExperiment:
     def to_json(self):
         return json.dumps(
             {
-                "length": len(self),
+                "length": len(self.code),
                 "dimension": self.code.dimension(),
                 "number_of_checks": self.code.number_of_checks(),
                 "decoder": self.decoder.to_json(),
