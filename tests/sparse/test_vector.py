@@ -1,5 +1,7 @@
 import pytest
-from pyqec.sparse import BinaryVector
+from pyqec.sparse import BinaryVector, to_dense
+import numpy as np
+
 
 def test_access():
     vector = BinaryVector(5, [1, 3])
@@ -12,3 +14,9 @@ def test_access():
     with pytest.raises(IndexError):
         vector.element(5)
 
+
+def test_to_dense():
+    vector = BinaryVector(5, [1, 3])
+    dense = to_dense(vector)
+    expected = np.array([0, 1, 0, 1, 0])
+    np.testing.assert_array_equal(dense, expected)

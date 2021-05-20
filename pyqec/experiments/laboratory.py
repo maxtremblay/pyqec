@@ -12,21 +12,24 @@ class Laboratory:
         self.experiments.append(experiment)
 
     def run_all_experiments_while(self, condition):
-        return self.__run_all(
-            lambda experiment: experiment.run_while(condition)
-        )
+        return self.__run_all(lambda experiment: experiment.run_while(condition))
 
     def run_all_experiments_n_times(self, number_of_iterations):
         def runner(experiment):
             return experiment.run_n_times(number_of_iterations)
+
         return self.__run_all(runner)
-    
+
     def run_all_experiments_until_n_events(self, n):
         """
         Run each experiment until n successes and n failures are obtained
         """
+
         def condition(statistics):
-            return statistics.number_of_successes < n and statistics.number_of_failures < n
+            return (
+                statistics.number_of_successes < n and statistics.number_of_failures < n
+            )
+
         self.run_all_experiments_while(condition)
 
     def error_probabilities(self):

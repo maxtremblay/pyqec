@@ -1,15 +1,16 @@
 import json
 from .statistics import Statistics
 
+
 class ClassicalDecodingExperiment:
     def __init__(self, code, decoder, noise):
         self.code = code
         self.decoder = decoder
         self.noise = noise
-    
+
     def run_once(self):
         """
-            Run a single decoding simulation assuming a zero codeword.
+        Run a single decoding simulation assuming a zero codeword.
         """
         error = self.noise.sample_error_of_length(len(self.code))
         codeword = self.decoder.decode(error)
@@ -36,7 +37,7 @@ class ClassicalDecodingExperiment:
                 "decoder": self.decoder.to_json(),
             }
         )
-        
+
     def error_probability(self):
         return self.noise.error_probability()
 

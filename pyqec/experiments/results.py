@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 
+
 class Results:
     def __init__(self, tags=None, probabilities=None, statistics=None):
         if tags:
@@ -28,7 +29,10 @@ class Results:
     def filter_by_tag(self, condition):
         def condition_on_tuple(data):
             return condition(data[0])
-        filtered = filter(condition_on_tuple, zip(self.tags, self.probabilities, self.statistics))
+
+        filtered = filter(
+            condition_on_tuple, zip(self.tags, self.probabilities, self.statistics)
+        )
         tags, probabilities, statistics = list(zip(*filtered))
         return Results(tags, probabilities, statistics)
 
@@ -39,12 +43,12 @@ class Results:
         return [stat.uncertainty() for stat in self.statistics]
 
     def plot(self, savepath=None):
-        fig, ax = self.__setup_plot() 
+        fig, ax = self.__setup_plot()
         results_by_tags = self.group_by_tag()
         for tag, results in results_by_tags.items():
             if tag == "":
                 results.__plot_curve(ax)
-            else: 
+            else:
                 results.__plot_curve(ax, tag)
         self.__render_plot(ax, fig, self.__has_legend(results_by_tags), savepath)
 
@@ -62,7 +66,7 @@ class Results:
                 yerr=self.uncertainties(),
                 marker="o",
                 markersize=4,
-                label=label
+                label=label,
             )
         else:
             ax.errorbar(
@@ -86,4 +90,3 @@ class Results:
             ax.legend(frameon=False)
         if savepath:
             fig.savefig(savepath)
-

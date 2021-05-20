@@ -4,17 +4,9 @@ from pyqec.experiments import ClassicalDecodingExperiment, Laboratory
 
 import matplotlib.pyplot as plt
 
-parity_check_matrix = BinaryMatrix(
-    7,
-    [ [3, 4, 5, 6],
-        [1, 2, 5, 6],
-        [0, 2, 4, 6]
-    ]
-)
-hamming_code = LinearCode(
-    parity_check_matrix, 
-    tag="Hamming code"
-)
+parity_check_matrix = BinaryMatrix(7, [[3, 4, 5, 6], [1, 2, 5, 6], [0, 2, 4, 6]])
+hamming_code = LinearCode(parity_check_matrix, tag="Hamming code")
+
 
 class HammingDecoder:
     def __init__(self, code):
@@ -33,21 +25,24 @@ class HammingDecoder:
     def bit_to_flip(self, syndrome):
         bit_to_flip = 0
         for unsatisfied_position in syndrome:
-            # The smallest position correspond 
+            # The smallest position correspond
             # to the highest power of 2.
-            bit_to_flip += 2**(syndrome.len() - 1 - unsatisfied_position)
+            bit_to_flip += 2 ** (syndrome.len() - 1 - unsatisfied_position)
         if bit_to_flip > 0:
             # We offset because binary vector are 0-indexed.
-            return bit_to_flip - 1 
+            return bit_to_flip - 1
         else:
             # There is no bit to flip
             return None
 
+
 decoder = HammingDecoder(hamming_code)
+
 
 def build_experiment(probability):
     noise = BinarySymmetricChannel(probability)
     return ClassicalDecodingExperiment(hamming_code, decoder, noise)
+
 
 labo = Laboratory(4)
 
@@ -59,4 +54,3 @@ for probability in probabilities:
 results = labo.run_all_experiments_n_times(500)
 
 results.plot("nice_figure.pdf")
-
