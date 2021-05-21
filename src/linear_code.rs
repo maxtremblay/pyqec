@@ -9,8 +9,8 @@ use pyo3::PySequenceProtocol;
 use pyo3::ToPyObject;
 
 pub(crate) fn random_regular_code(
-    block_size: usize,
-    number_of_checks: usize,
+    num_bits: usize,
+    num_checks: usize,
     bit_degree: usize,
     check_degree: usize,
     random_seed: Option<u64>,
@@ -19,8 +19,8 @@ pub(crate) fn random_regular_code(
     let tag = tag.unwrap_or("".to_string());
     let mut rng = get_rng_with_seed(random_seed);
     LinearCode::random_regular_code()
-        .block_size(block_size)
-        .number_of_checks(number_of_checks)
+        .block_size(num_bits)
+        .number_of_checks(num_checks)
         .bit_degree(bit_degree)
         .check_degree(check_degree)
         .sample_with(&mut rng)
@@ -28,46 +28,75 @@ pub(crate) fn random_regular_code(
         .map_err(|error| PyValueError::new_err(error.to_string()))
 }
 
+
+pub(crate) fn hamming_code(tag: Option<String>) -> PyLinearCode {
+    PyLinearCode {
+        inner: LinearCode::hamming_code(),
+        tag: tag.unwrap_or("".to_string()),
+    }
+}
+
+pub(crate) fn repetition_code(length: usize, tag: Option<String>) -> PyLinearCode {
+    PyLinearCode {
+        inner: LinearCode::repetition_code(length),
+        tag: tag.unwrap_or("".to_string()),
+    }
+}
+
 /// An implementation of linear codes optimized for LDPC codes.
 ///
 /// A code can be defined from either a parity check matrix `H`
 /// or a generator matrix `G`.
-/// These matrices have the property that `H G^T = 0`.
+/// These matrices need to be orthogonal, that is `H G^T = 0`.
 ///
-/// Example:
-///     This example shows 2 way to define the Hamming code.
+/// Parameters
+/// ----------
+/// parity_check_matrix : Optional[pyqec.sparse.BinaryMatrix]
+///     The parity check matrix of the code.
+///     Most be orthogonal to the generator matrix.
+///     If omited, one is computed from the generator matrix.
+/// generator_matrix : Optional[pyqec.sparse.BinaryMatrix]
+///     The generator matrix of the code.
+///     Most be orthogonal to the parity check matrix.
+///     If omited, one is computed from the parity check matrix.
+/// tag : Optional[String]
+///     A label for the code used to save data
+///     and make automatic legend in plots.
+///     If omited, the empty string is used a default tag.
 ///
-///     From a parity check matrix
+/// Example
+/// -------
+/// This example shows 2 ways to define the Hamming code.
+/// They both required you import the following.
 ///
-///         code_from_checks = LinearCode.from_checks(
-///             7,
-///             [[0, 1, 2, 4], [0, 1, 3, 5], [0, 2, 3, 6]]
-///         )
+///     >>> from pyqec.sparse import BinaryMatrix
+///     >>> from pyqec.classical import LinearCode
 ///
-///     From a generator matrix
+/// You can build a linear code from a parity check matrix
+///     
+///     >>> matrix = BinaryMatrix(7, [[0, 1, 2, 4], [0, 1, 3, 5], [0, 2, 3, 6]])
+///     >>> code_pcm = LinearCode(parity_check_matrix=pcm)
 ///
-///         code_from_generators = LinearCode.from_generators(
-///             7,
-///             [[0, 4, 5, 6], [1, 4, 5], [2, 4, 6], [3, 5, 6]]
-///         )
+/// or from a generator matrix
 ///
-/// Comparison:
-///     Use the `==` if you want to know if 2 codes
-///     have exactly the same parity check matrix and
-///     generator matrix.
-///     However, since there is freedom in the choice of
-///     parity check matrix and generator matrix for the same code,
-///     use `has_same_codespace_as` method
-///     if you want to know if 2 codes define the same codespace even
-///     if they may have different parity check matrix or generator matrix.
+///     >>> matrix = BinaryMatrix(7, [[0, 4, 5, 6], [1, 4, 5], [2, 4, 6], [3, 5, 6]])
+///     >>> code_gm = LinearCode(generator_matrix=matrix)
 ///
-///         >>> code_from_checks == code_from_generators
-///         False
-///         >>> code_from_checks.has_same_codespace_as(code_from_generators)
-///         True
+/// Note
+/// ----
+/// Use the `==` if you want to know if 2 codes
+/// have exactly the same parity check matrix, generator matrix and tags.
+/// However, since there is freedom in the choice of the matrices and tag
+/// for the same code, use **has_same_codespace** method
+/// if you want to know if 2 codes define the same codespace even
+/// if they may have different parity check matrices or generator matrices.
 ///
+///     >>> code_pcm == code_gm
+///     False
+///     >>> code_pcm.has_same_codespace(code_gm)
+///     True
 #[pyclass(name = LinearCode, module="pyqec.pyqec")]
-#[text_signature = "(parity_check_matrix, generator_matrix, /)"]
+#[text_signature = "(parity_check_matrix=None, generator_matrix=None, tag=None)"]
 pub struct PyLinearCode {
     pub(crate) inner: LinearCode,
     tag: String,
@@ -118,37 +147,53 @@ impl PyLinearCode {
         }
     }
 
+
     /// The tag of the code.
-    #[text_signature = "($self)"]
+    #[text_signature = "(self)"]
     pub fn tag(&self) -> &str {
         &self.tag
     }
 
+    /// The parity check matrix of the code.
+    #[text_signature = "(self)"]
+    pub fn parity_check_matrix(&self) -> PyBinaryMatrix {
+        self.inner.parity_check_matrix().clone().into()
+    }
+
+    /// The parity check matrix of the code.
+    #[text_signature = "(self)"]
+    pub fn generator_matrix(&self) -> PyBinaryMatrix {
+        self.inner.generator_matrix().clone().into()
+    }
+
     /// The number of bits in the code.
-    #[text_signature = "($self)"]
+    ///
+    ///     >>> len(code) == code.length()
+    ///     true
+    #[text_signature = "(self)"]
     pub fn length(&self) -> usize {
         self.inner.block_size()
     }
 
     /// The number of encoded qubits.
-    #[text_signature = "($self)"]
+    #[text_signature = "(self)"]
     pub fn dimension(&self) -> usize {
         self.inner.dimension()
     }
 
-    /// The weight of the small non trivial codeword.
+    /// The weight of the smallest non trivial codeword.
     ///
     /// Returns
     /// -------
-    ///     The minimal distance of the code if
-    ///     the dimension is at least 1 or -1
-    ///     if the dimension is 0.
+    /// The minimal distance of the code if
+    /// the dimension is at least 1 or -1
+    /// if the dimension is 0.
     ///
-    /// Notes
-    /// -----
-    ///     This function execution time scale exponentially
-    ///     with the dimension of the code.
-    ///     Use at your own risk!
+    /// Caution
+    /// -------
+    /// This function execution time scale exponentially
+    /// with the dimension of the code.
+    /// Use at your own risk!
     #[text_signature = "(self)"]
     pub fn minimal_distance(&self) -> i64 {
         self.inner
@@ -159,38 +204,26 @@ impl PyLinearCode {
 
     /// The number of checks in the code.
     #[text_signature = "(self)"]
-    pub fn number_of_checks(&self) -> usize {
+    pub fn num_checks(&self) -> usize {
         self.inner.number_of_checks()
     }
 
     /// The number of codeword generators in the code.
     #[text_signature = "(self)"]
-    pub fn number_of_generators(&self) -> usize {
+    pub fn num_generators(&self) -> usize {
         self.inner.number_of_generators()
-    }
-
-    /// The parity check matrix of the code.
-    #[text_signature = "(self)"]
-    pub fn parity_check_matrix(&self) -> PyBinaryMatrix {
-        self.inner.parity_check_matrix().clone().into()
-    }
-
-    /// The generator matrix of the code.
-    #[text_signature = "(self)"]
-    pub fn generator_matrix(&self) -> PyBinaryMatrix {
-        self.inner.generator_matrix().clone().into()
     }
 
     /// The syndrome of a given message.
     ///
     /// Parameters
     /// ----------
-    /// message: list of int
+    /// message: Seq[int]
     ///     The positions with value 1 in the message.
     ///
     /// Returns
     /// -------
-    /// list of int
+    /// list[int]
     ///     The positions where `H y` is 1 where `H` is
     ///     the parity check matrix of the code and `y`
     ///     the input message.
@@ -208,7 +241,7 @@ impl PyLinearCode {
     ///
     /// Parameters
     /// ----------
-    /// message: list of int
+    /// message: Seq[int]
     ///     The positions with value 1 in the message.
     ///
     /// Returns
@@ -235,7 +268,7 @@ impl PyLinearCode {
     ///     True if other codewords are exactly the same
     ///     as this code codewords.
     #[text_signature = "(self, other)"]
-    pub fn has_same_codespace_as(&self, other: PyRef<Self>) -> bool {
+    pub fn has_same_codespace(&self, other: PyRef<Self>) -> bool {
         self.inner.has_same_codespace_as(&other.inner)
     }
 
@@ -280,6 +313,6 @@ impl PyObjectProtocol for PyLinearCode {
 #[pyproto]
 impl PySequenceProtocol for PyLinearCode {
     fn __len__(&self) -> usize {
-        self.inner.block_size()
+        self.length()
     }
 }

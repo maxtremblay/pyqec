@@ -1,7 +1,7 @@
 use pyo3::prelude::*;
 
 mod linear_code;
-use linear_code::{random_regular_code, PyLinearCode};
+use linear_code::{random_regular_code, hamming_code, repetition_code, PyLinearCode};
 
 mod noise;
 use noise::PyBinarySymmetricChannel;
@@ -27,18 +27,18 @@ fn pyqec(_py: Python, module: &PyModule) -> PyResult<()> {
     ///
     /// Parameters
     /// ----------
-    /// block_size: int, default = 4
+    /// num_bits: int
     ///     The number of bits in the code.
-    /// number_of_checks: int, default = 3
+    /// num_checks: int, default = 3
     ///     The number of checks in the code.
-    /// bit_degree: int, default = 3
+    /// bit_degree: int
     ///     The number of checks connected to each bit.
-    /// check_degree: int, default = 4
+    /// check_degree: int
     ///     The number of bits connected to each check.
-    /// random_seed: int, optional
+    /// random_seed: Optional[int]
     ///     A seed to feed the random number generator.
     ///     By default, the rng is initialize from entropy.
-    /// tag: string, option
+    /// tag: Optional[string]
     ///     An identifier for the code.
     ///
     /// Returns
@@ -51,22 +51,53 @@ fn pyqec(_py: Python, module: &PyModule) -> PyResult<()> {
     /// ValueError
     ///     If `block_size * bit_degree != number_of_checks * check_degree`.
     #[pyfn(module, "random_regular_code")]
+    #[text_signature = "(num_bits=4, num_checks=3, bit_degree=3, check_degree=4, random_seed=None, tag=None)"]
     fn py_random_regular_code(
-        block_size: usize,
-        number_of_checks: usize,
+        num_bits: usize,
+        num_checks: usize,
         bit_degree: usize,
         check_degree: usize,
         random_seed: Option<u64>,
         tag: Option<String>,
     ) -> PyResult<PyLinearCode> {
         random_regular_code(
-            block_size,
-            number_of_checks,
+            num_bits,
+            num_checks,
             bit_degree,
             check_degree,
             random_seed,
             tag,
         )
     }
+
+
+    /// Returns an instance of the Hamming code.
+    ///
+    /// Arguments
+    /// ---------
+    /// tag : Optional[String]
+    ///     A label for the code used to save data
+    ///     and make automatic legend in plots.
+    #[pyfn(module, "hamming_code")]
+    #[text_signature = "(tag=None)"]
+    pub fn py_hamming_code(tag: Option<String>) -> PyLinearCode {
+        hamming_code(tag)
+    }
+
+    /// Returns an instance of the repetition code.
+    ///
+    /// Arguments
+    /// ---------
+    /// length : Int
+    ///     The number of bits.
+    /// tag : Optional[String]
+    ///     A label for the code used to save data
+    ///     and make automatic legend in plots.
+    #[pyfn(module, "repetition_code")]
+    #[text_signature = "(length, tag=None)"]
+    pub fn py_repetition_code(length: usize, tag: Option<String>) -> PyLinearCode {
+        repetition_code(length, tag)
+    }
+
     Ok(())
 }

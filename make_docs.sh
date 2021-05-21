@@ -1,2 +1,4 @@
 maturin develop
-pdoc --html --force --output-dir=docs pyqec
+cd docs/api
+make html
+cd ../..

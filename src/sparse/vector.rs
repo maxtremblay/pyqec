@@ -3,11 +3,33 @@ use pyo3::exceptions::{PyIndexError, PyNotImplementedError, PyValueError};
 use pyo3::prelude::*;
 use pyo3::types::PyBytes;
 use pyo3::ToPyObject;
-use pyo3::{PyIterProtocol, PyNumberProtocol, PyObjectProtocol};
+use pyo3::{PyIterProtocol, PyNumberProtocol, PyObjectProtocol, PySequenceProtocol};
 use sparse_bin_mat::SparseBinVec;
+use super::PyBinaryMatrix;
 use std::collections::hash_map::DefaultHasher;
 use std::hash::{Hash, Hasher};
 
+/// A sparse binary vector.
+///
+/// Parameters
+/// ----------
+/// length : Int
+///     The number of elements in the vector.
+///     Must be a non-negative integer.
+/// positions : Seq[Int]
+///     The positions of entries with value 1.
+///
+/// Example
+/// -------
+///     >>> from pyqec.sparse import BinaryVector, to_dense
+///     >>> vector = BinaryVector(3, [0, 2])
+///     >>> to_dense(vector)
+///     array([1, 0, 1], dtype=int32)
+///
+/// Raises
+/// ------
+/// ValueError
+///     If the length is negative or if a position is out of bound.
 #[pyclass(name = BinaryVector, module="pyqec.pyqec")]
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct PyBinaryVector {
@@ -30,42 +52,65 @@ impl PyBinaryVector {
             .map_err(|error| PyValueError::new_err(error.to_string()))
     }
 
+    /// Constructs a vector of the given length filled with zeros.
     #[staticmethod]
+    #[text_signature = "(length)"]
     pub fn zeros(length: usize) -> Self {
         Self::from(SparseBinVec::zeros(length))
     }
 
+    /// Constructs a vector of length 0.
+    ///
+    /// This is useful as a placeholder since it allocates a minimal
+    /// amount of memory.
     #[staticmethod]
+    #[text_signature = "()"]
     pub fn empty() -> Self {
         Self::from(SparseBinVec::empty())
     }
 
+    /// Returns the number of elements in the vector.
     pub fn len(&self) -> usize {
         self.inner.len()
     }
 
+    /// Returns the number of elements with value 1.
     pub fn weight(&self) -> usize {
         self.inner.weight()
     }
-
+    
+    /// Checks if the length of the vector is 0.
     pub fn is_empty(&self) -> bool {
         self.inner.is_empty()
     }
 
+    /// Checks if all elements are 0.
     pub fn is_zero(&self) -> bool {
         self.inner.is_zero()
     }
 
-    pub fn is_zero_at(&self, index: usize) -> PyResult<bool> {
-        self.inner.is_zero_at(index).ok_or_else(|| {
+    /// Checks if the element at the given position is zero.
+    ///
+    /// Raises
+    /// ------
+    /// IndexError
+    ///     The position is out of bound.
+    pub fn is_zero_at(&self, position: usize) -> PyResult<bool> {
+        self.inner.is_zero_at(position).ok_or_else(|| {
             PyIndexError::new_err(format!(
-                "invalid index {} for vector of length {}",
-                index,
+                "invalid position {} for vector of length {}",
+                position,
                 self.inner.len()
             ))
         })
     }
 
+    /// Checks if the element at the given position is one.
+    ///
+    /// Raises
+    /// ------
+    /// IndexError
+    ///     The position is out of bound.
     pub fn is_one_at(&self, index: usize) -> PyResult<bool> {
         self.inner.is_one_at(index).ok_or_else(|| {
             PyIndexError::new_err(format!(
@@ -76,6 +121,12 @@ impl PyBinaryVector {
         })
     }
 
+    /// Returns the value of the element at the given position.
+    ///
+    /// Raises
+    /// ------
+    /// IndexError
+    ///     The position is out of bound.
     pub fn element(&self, index: usize) -> PyResult<u8> {
         self.inner.get(index).ok_or_else(|| {
             PyIndexError::new_err(format!(
@@ -86,6 +137,23 @@ impl PyBinaryVector {
         })
     }
 
+    /// Index the given value in the list of non-trivial positions.
+    ///
+    /// Example
+    /// -------
+    ///     >>> from pyqec.sparse import BinaryVector
+    ///     >>> vector = BinaryVector(5, [0, 2, 4])
+    ///     >>> vector.non_trivial_position(0)
+    ///     0
+    ///     >>> vector.non_trivial_position(1)
+    ///     2
+    ///     >>> vector.non_trivial_position(2)
+    ///     4
+    ///
+    /// Raises
+    /// ------
+    /// IndexError
+    ///     The index is greater or equal to the weight.
     pub fn non_trivial_position(&self, index: usize) -> PyResult<usize> {
         self.non_trivial_positions()
             .get(index)
@@ -99,13 +167,78 @@ impl PyBinaryVector {
             })
     }
 
+    /// Concatenates self with other.
+    ///
+    /// Example
+    /// -------
+    ///     >>> from pyqec.sparse import BinaryVector
+    ///     >>> left = BinaryVector(5, [0, 2, 4])
+    ///     >>> right = BinaryVector(4, [1, 3])
+    ///     >>> left.concat(right)
+    ///     [0, 2, 4, 6, 8]
     pub fn concat(&self, other: PyRef<Self>) -> Self {
         self.inner.concat(&other.inner).into()
     }
 
-    pub fn dot_with(&self, other: PyRef<Self>) -> PyResult<u8> {
+    /// Computes the dot product between two vectors.
+    ///
+    /// Example
+    /// -------
+    ///     >>> from pyqec.sparse import BinaryVector
+    ///     >>> left = BinaryVector(5, [0, 2, 4])
+    ///     >>> right = BinaryVector(5, [1, 3])
+    ///     >>> left.dot_with_vector(right)
+    ///     0
+    /// 
+    /// Raises
+    /// ------
+    /// ValueError
+    ///     If the vector have different length.
+    pub fn dot_with_vector(&self, other: PyRef<Self>) -> PyResult<u8> {
         self.inner
             .dot_with(&other.inner)
+            .map_err(|error| PyValueError::new_err(error.to_string()))
+    }
+
+    /// Computes the dot product between self and a matrix.
+    ///
+    /// This assume that the vector is in row shape
+    /// and compute `v * M`.
+    ///
+    /// Example
+    /// -------
+    ///     >>> from pyqec.sparse import BinaryVector, PyBinaryMatrix
+    ///     >>> vector = BinaryVector(3, [0, 2])
+    ///     >>> matrix = PyBinaryMatrix(4, [[0, 3]], [0, 1, 2], [1, 3]])
+    ///     >>> vector.dot_with_matrix(matrix)
+    ///     [0, 1]
+    /// 
+    /// Raises
+    /// ------
+    /// ValueError
+    ///     If the vector length is the not the same as the matrix number of rows.
+    pub fn dot_with_matrix(&self, other: PyRef<PyBinaryMatrix>) -> PyResult<Self> {
+        other.dot_with_vector(self)
+    }
+
+    /// Computes the bitwise xor sum of two vectors.
+    ///
+    /// Example
+    /// -------
+    ///     >>> from pyqec.sparse import BinaryVector
+    ///     >>> left = BinaryVector(5, [0, 2, 4])
+    ///     >>> right = BinaryVector(5, [1, 2, 3])
+    ///     >>> left.bitwise_xor(right)
+    ///     [0, 1, 3, 4]
+    /// 
+    /// Raises
+    /// ------
+    /// ValueError
+    ///     If the vectors have different lengths.
+    pub fn bitwise_xor(&self, other: PyRef<Self>) -> PyResult<Self> {
+        self.inner
+            .bitwise_xor_with(&other.inner)
+            .map(|vector| vector.into())
             .map_err(|error| PyValueError::new_err(error.to_string()))
     }
 
@@ -195,5 +328,13 @@ impl PyIterProtocol for Iter {
             .cloned();
         slf.index += 1;
         value
+    }
+}
+
+
+#[pyproto]
+impl PySequenceProtocol for PyBinaryVector {
+    fn __len__(&self) -> usize {
+        self.len()
     }
 }

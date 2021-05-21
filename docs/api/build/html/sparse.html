@@ -1,0 +1,798 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sparse binary linear algebra &#8212; pyqec  documentation</title>
+    
+  <link href="_static/css/theme.css" rel="stylesheet" />
+  <link href="_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
+
+    
+  <link rel="stylesheet"
+    href="_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/basic.css" type="text/css" />
+    
+  <link rel="preload" as="script" href="_static/js/index.1c5a1a01449ed65a7b51.js">
+
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Classical error correction" href="classical.html" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+    <nav class="navbar navbar-light navbar-expand-lg bg-light fixed-top bd-navbar" id="navbar-main"><div class="container-xl">
+
+  <div id="navbar-start">
+    
+    
+<a class="navbar-brand" href="index.html">
+<p class="title">pyqec</p>
+</a>
+
+    
+  </div>
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapsible" aria-controls="navbar-collapsible" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  
+  <div id="navbar-collapsible" class="col-lg-9 collapse navbar-collapse">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <ul id="navbar-main-elements" class="navbar-nav">
+    <li class="toctree-l1 nav-item">
+ <a class="reference internal nav-link" href="classical.html">
+  Classical error correction
+ </a>
+</li>
+
+<li class="toctree-l1 current active nav-item">
+ <a class="current reference internal nav-link" href="#">
+  Sparse binary linear algebra
+ </a>
+</li>
+
+    
+</ul>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+</div>
+    </nav>
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+            
+            <!-- Only show if we have sidebars configured, else just a small margin  -->
+            <div class="col-12 col-md-3 bd-sidebar"><form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+  <div class="bd-toc-item active">
+    
+  </div>
+</nav>
+            </div>
+            
+          
+
+          
+          <div class="d-none d-xl-block col-xl-2 bd-toc">
+            
+              
+              <div class="toc-item">
+                
+<div class="tocsection onthispage pt-5 pb-3">
+    <i class="fas fa-list"></i> On this page
+</div>
+
+<nav id="bd-toc-nav">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#binary-matrix">
+   Binary matrix
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#binary-vector">
+   Binary vector
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#conversion-to-numpy">
+   Conversion to Numpy
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#general-operations">
+   General operations
+  </a>
+ </li>
+</ul>
+
+</nav>
+              </div>
+              
+              <div class="toc-item">
+                
+              </div>
+              
+            
+          </div>
+          
+
+          
+          
+            
+          
+          <main class="col-12 col-md-9 col-xl-7 py-md-5 pl-md-5 pr-md-4 bd-content" role="main">
+              
+              <div>
+                
+  <div class="section" id="sparse-binary-linear-algebra">
+<h1>Sparse binary linear algebra<a class="headerlink" href="#sparse-binary-linear-algebra" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="binary-matrix">
+<h2>Binary matrix<a class="headerlink" href="#binary-matrix" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="pyqec.sparse.BinaryMatrix">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">pyqec.sparse.</span></code><code class="sig-name descname"><span class="pre">BinaryMatrix</span></code><a class="headerlink" href="#pyqec.sparse.BinaryMatrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>A sparse binary matrix with efficient row access.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>num_columns</strong> (<em>Int</em>) – The number of columns in the matrix.
+Must be a non-negative integer.</p></li>
+<li><p><strong>rows</strong> (<em>Seq</em><em>[</em><em>Seq</em><em>[</em><em>Int</em><em>]</em><em>]</em>) – Each sequence in the outer sequence represents a row of the matrix.
+The inner sequences contain the positions (columns) of entries with value 1
+in the corresponding row.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pyqec.sparse</span> <span class="kn">import</span> <span class="n">BinaryMatrix</span><span class="p">,</span> <span class="n">to_dense</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">matrix</span> <span class="o">=</span> <span class="n">BinaryMatrix</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">to_dense</span><span class="p">(</span><span class="n">matrix</span><span class="p">)</span>
+<span class="go">array([[1, 0, 1],</span>
+<span class="go">       [0, 1, 0],</span>
+<span class="go">       [1, 1, 0]], dtype=int32)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>If the number of columns is negative or</strong> – </p></li>
+<li><p><strong>if a position in a row is out of bound.</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="pyqec.sparse.BinaryMatrix.bitwise_xor">
+<code class="sig-name descname"><span class="pre">bitwise_xor</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyqec.sparse.BinaryMatrix.bitwise_xor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the bitwise xor sum of self and other.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pyqec.sparse</span> <span class="kn">import</span> <span class="n">BinaryMatrix</span><span class="p">,</span> <span class="n">BinaryVector</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">matrix1</span> <span class="o">=</span> <span class="n">BinaryMatrix</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">matrix2</span> <span class="o">=</span> <span class="n">BinaryMatrix</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">matrix</span><span class="o">.</span><span class="n">bitwise_xor</span><span class="p">(</span><span class="n">matrix2</span><span class="p">)</span>
+<span class="go">[2]</span>
+<span class="go">[3]</span>
+<span class="go">[0, 2, 3]</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – The shapes of the matrices are different.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyqec.sparse.BinaryMatrix.dot_with_matrix">
+<code class="sig-name descname"><span class="pre">dot_with_matrix</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyqec.sparse.BinaryMatrix.dot_with_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the dot product between self and the given matrix.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pyqec.sparse</span> <span class="kn">import</span> <span class="n">BinaryMatrix</span><span class="p">,</span> <span class="n">BinaryVector</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">matrix1</span> <span class="o">=</span> <span class="n">BinaryMatrix</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">matrix2</span> <span class="o">=</span> <span class="n">BinaryMatrix</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">matrix</span><span class="o">.</span><span class="n">dot_with_matrix</span><span class="p">(</span><span class="n">matrix2</span><span class="p">)</span>
+<span class="go">[1, 2]</span>
+<span class="go">[0, 1]</span>
+<span class="go">[0, 2]</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – Number of columns of self is not the same as the number of rows of the other matrix.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyqec.sparse.BinaryMatrix.dot_with_vector">
+<code class="sig-name descname"><span class="pre">dot_with_vector</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyqec.sparse.BinaryMatrix.dot_with_vector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the dot product between self and the given vector.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pyqec.sparse</span> <span class="kn">import</span> <span class="n">BinaryMatrix</span><span class="p">,</span> <span class="n">BinaryVector</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">matrix</span> <span class="o">=</span> <span class="n">BinaryMatrix</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">vector</span> <span class="o">=</span> <span class="n">BinaryVector</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">matrix</span><span class="o">.</span><span class="n">dot_with_vector</span><span class="p">(</span><span class="n">vector</span><span class="p">)</span>
+<span class="go">[0, 2]</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – The vector length is not the same as the matrix number of columns.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyqec.sparse.BinaryMatrix.echelon_form">
+<code class="sig-name descname"><span class="pre">echelon_form</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyqec.sparse.BinaryMatrix.echelon_form" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs Gaussian elimination to return
+the matrix in echelon form.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pyqec.sparse</span> <span class="kn">import</span> <span class="n">BinaryMatrix</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">matrix</span> <span class="o">=</span> <span class="n">BinaryMatrix</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">matrix</span><span class="o">.</span><span class="n">echelon_form</span><span class="p">()</span>
+<span class="go">[0, 1, 2]</span>
+<span class="go">[1, 3]</span>
+<span class="go">[3]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyqec.sparse.BinaryMatrix.element">
+<code class="sig-name descname"><span class="pre">element</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyqec.sparse.BinaryMatrix.element" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the element at the given row and column.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>IndexError</strong> – The row or column is out of bound.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyqec.sparse.BinaryMatrix.empty">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">empty</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyqec.sparse.BinaryMatrix.empty" title="Permalink to this definition">¶</a></dt>
+<dd><p>An empty matrix.</p>
+<p>Mostly useful as a placeholder since
+it allocate a minimal amount of memory.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pyqec.sparse</span> <span class="kn">import</span> <span class="n">BinaryMatrix</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">matrix</span> <span class="o">=</span> <span class="n">BinaryMatrix</span><span class="o">.</span><span class="n">empty</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">matrix</span><span class="o">.</span><span class="n">num_rows</span><span class="p">()</span>
+<span class="go">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">matrix</span><span class="o">.</span><span class="n">num_columns</span><span class="p">()</span>
+<span class="go">0</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyqec.sparse.BinaryMatrix.horizontal_concat_with">
+<code class="sig-name descname"><span class="pre">horizontal_concat_with</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyqec.sparse.BinaryMatrix.horizontal_concat_with" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the horizontal concatenation of self and other matrix.</p>
+<p>If the matrices have a different number of rows,
+the smallest one is padded with zeros.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pyqec.sparse</span> <span class="kn">import</span> <span class="n">BinaryMatrix</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">matrix</span> <span class="o">=</span> <span class="n">BinaryMatrix</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">matrix</span><span class="o">.</span><span class="n">horizontal_concat_with</span><span class="p">(</span><span class="n">BinaryMatrix</span><span class="o">.</span><span class="n">identity</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+<span class="go">[0, 1, 2, 4]</span>
+<span class="go">[1, 2, 3, 5]</span>
+<span class="go">[6]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyqec.sparse.BinaryMatrix.identity">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">identity</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">length</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyqec.sparse.BinaryMatrix.identity" title="Permalink to this definition">¶</a></dt>
+<dd><p>An identity matrix of the given length.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pyqec.sparse</span> <span class="kn">import</span> <span class="n">BinaryMatrix</span><span class="p">,</span> <span class="n">to_dense</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">matrix</span> <span class="o">=</span> <span class="n">BinaryMatrix</span><span class="o">.</span><span class="n">identity</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">to_dense</span><span class="p">(</span><span class="n">matrix</span><span class="p">)</span>
+<span class="go">array([[1, 0, 0],</span>
+<span class="go">       [0, 1, 0],</span>
+<span class="go">       [0, 0, 1]], dtype=int32)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyqec.sparse.BinaryMatrix.is_empty">
+<code class="sig-name descname"><span class="pre">is_empty</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyqec.sparse.BinaryMatrix.is_empty" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if the matrix has shape (0, 0).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyqec.sparse.BinaryMatrix.is_one_at">
+<code class="sig-name descname"><span class="pre">is_one_at</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyqec.sparse.BinaryMatrix.is_one_at" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if the given element has value 1.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>IndexError</strong> – The row or column is out of bound.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyqec.sparse.BinaryMatrix.is_zero">
+<code class="sig-name descname"><span class="pre">is_zero</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyqec.sparse.BinaryMatrix.is_zero" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if all the elements have value 0.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyqec.sparse.BinaryMatrix.is_zero_at">
+<code class="sig-name descname"><span class="pre">is_zero_at</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyqec.sparse.BinaryMatrix.is_zero_at" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if the given element has value 0.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>IndexError</strong> – The row or column is out of bound.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyqec.sparse.BinaryMatrix.nullspace">
+<code class="sig-name descname"><span class="pre">nullspace</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyqec.sparse.BinaryMatrix.nullspace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an orthogonal matrix where the rows
+generate the nullspace of self.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pyqec.sparse</span> <span class="kn">import</span> <span class="n">BinaryMatrix</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">matrix</span> <span class="o">=</span> <span class="n">BinaryMatrix</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">matrix</span><span class="o">.</span><span class="n">nullspace</span><span class="p">()</span>
+<span class="go">[1, 2]</span>
+<span class="go">[0, 1, 3]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyqec.sparse.BinaryMatrix.num_columns">
+<code class="sig-name descname"><span class="pre">num_columns</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyqec.sparse.BinaryMatrix.num_columns" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of columns in the matrix.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyqec.sparse.BinaryMatrix.num_ones">
+<code class="sig-name descname"><span class="pre">num_ones</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyqec.sparse.BinaryMatrix.num_ones" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of elements with value 1.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyqec.sparse.BinaryMatrix.num_rows">
+<code class="sig-name descname"><span class="pre">num_rows</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyqec.sparse.BinaryMatrix.num_rows" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of rows in the matrix.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyqec.sparse.BinaryMatrix.num_zeros">
+<code class="sig-name descname"><span class="pre">num_zeros</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyqec.sparse.BinaryMatrix.num_zeros" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of elements with value 0.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyqec.sparse.BinaryMatrix.rank">
+<code class="sig-name descname"><span class="pre">rank</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyqec.sparse.BinaryMatrix.rank" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the number of linearly independent rows (or columns)
+of the matrix.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pyqec.sparse</span> <span class="kn">import</span> <span class="n">BinaryMatrix</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">matrix</span> <span class="o">=</span> <span class="n">BinaryMatrix</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">matrix</span><span class="o">.</span><span class="n">rank</span><span class="p">()</span>
+<span class="go">3</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyqec.sparse.BinaryMatrix.row">
+<code class="sig-name descname"><span class="pre">row</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyqec.sparse.BinaryMatrix.row" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the given row as a BinaryVector.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>IndexError</strong> – The row is out of bound.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyqec.sparse.BinaryMatrix.rows">
+<code class="sig-name descname"><span class="pre">rows</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyqec.sparse.BinaryMatrix.rows" title="Permalink to this definition">¶</a></dt>
+<dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pyqec.sparse</span> <span class="kn">import</span> <span class="n">BinaryMatrix</span><span class="p">,</span> <span class="n">to_dense</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">matrix</span> <span class="o">=</span> <span class="n">BinaryMatrix</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">matrix</span><span class="o">.</span><span class="n">rows</span><span class="p">():</span>
+<span class="gp">... </span>   <span class="nb">print</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+<span class="go">[0, 2]</span>
+<span class="go">[1]</span>
+<span class="go">[0, 1]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyqec.sparse.BinaryMatrix.shape">
+<code class="sig-name descname"><span class="pre">shape</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyqec.sparse.BinaryMatrix.shape" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a tuple of the numbers of rows and columns.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyqec.sparse.BinaryMatrix.transposed">
+<code class="sig-name descname"><span class="pre">transposed</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyqec.sparse.BinaryMatrix.transposed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the transpose of the matrix.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pyqec.sparse</span> <span class="kn">import</span> <span class="n">BinaryMatrix</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">matrix</span> <span class="o">=</span> <span class="n">BinaryMatrix</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">matrix</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+<span class="go">[0, 2]</span>
+<span class="go">[1, 2]</span>
+<span class="go">[0]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyqec.sparse.BinaryMatrix.vertical_concat_with">
+<code class="sig-name descname"><span class="pre">vertical_concat_with</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyqec.sparse.BinaryMatrix.vertical_concat_with" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the vertical concatenation of self and other matrix.</p>
+<p>If the matrices have a different number of columns,
+the smallest one is padded with zeros.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pyqec.sparse</span> <span class="kn">import</span> <span class="n">BinaryMatrix</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">matrix</span> <span class="o">=</span> <span class="n">BinaryMatrix</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">matrix</span><span class="o">.</span><span class="n">vertical_concat_with</span><span class="p">(</span><span class="n">BinaryMatrix</span><span class="o">.</span><span class="n">identity</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+<span class="go">[0, 1, 2]</span>
+<span class="go">[1, 2, 3]</span>
+<span class="go">[0]</span>
+<span class="go">[1]</span>
+<span class="go">[2]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyqec.sparse.BinaryMatrix.zeros">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">zeros</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_rows</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_columns</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyqec.sparse.BinaryMatrix.zeros" title="Permalink to this definition">¶</a></dt>
+<dd><p>A matrix filled with zeros.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pyqec.sparse</span> <span class="kn">import</span> <span class="n">BinaryMatrix</span><span class="p">,</span> <span class="n">to_dense</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">matrix</span> <span class="o">=</span> <span class="n">BinaryMatrix</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">to_dense</span><span class="p">(</span><span class="n">matrix</span><span class="p">)</span>
+<span class="go">array([[0, 0, 0],</span>
+<span class="go">       [0, 0, 0]], dtype=int32)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="binary-vector">
+<h2>Binary vector<a class="headerlink" href="#binary-vector" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="pyqec.sparse.BinaryVector">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">pyqec.sparse.</span></code><code class="sig-name descname"><span class="pre">BinaryVector</span></code><a class="headerlink" href="#pyqec.sparse.BinaryVector" title="Permalink to this definition">¶</a></dt>
+<dd><p>A sparse binary vector.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>length</strong> (<em>Int</em>) – The number of elements in the vector.
+Must be a non-negative integer.</p></li>
+<li><p><strong>positions</strong> (<em>Seq</em><em>[</em><em>Int</em><em>]</em>) – The positions of entries with value 1.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pyqec.sparse</span> <span class="kn">import</span> <span class="n">BinaryVector</span><span class="p">,</span> <span class="n">to_dense</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">vector</span> <span class="o">=</span> <span class="n">BinaryVector</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">to_dense</span><span class="p">(</span><span class="n">vector</span><span class="p">)</span>
+<span class="go">array([1, 0, 1], dtype=int32)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If the length is negative or if a position is out of bound.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="pyqec.sparse.BinaryVector.bitwise_xor">
+<code class="sig-name descname"><span class="pre">bitwise_xor</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyqec.sparse.BinaryVector.bitwise_xor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the bitwise xor sum of two vectors.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pyqec.sparse</span> <span class="kn">import</span> <span class="n">BinaryVector</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">left</span> <span class="o">=</span> <span class="n">BinaryVector</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">right</span> <span class="o">=</span> <span class="n">BinaryVector</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">left</span><span class="o">.</span><span class="n">bitwise_xor</span><span class="p">(</span><span class="n">right</span><span class="p">)</span>
+<span class="go">[0, 1, 3, 4]</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If the vectors have different lengths.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyqec.sparse.BinaryVector.concat">
+<code class="sig-name descname"><span class="pre">concat</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyqec.sparse.BinaryVector.concat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Concatenates self with other.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pyqec.sparse</span> <span class="kn">import</span> <span class="n">BinaryVector</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">left</span> <span class="o">=</span> <span class="n">BinaryVector</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">right</span> <span class="o">=</span> <span class="n">BinaryVector</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">left</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">right</span><span class="p">)</span>
+<span class="go">[0, 2, 4, 6, 8]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyqec.sparse.BinaryVector.dot_with_matrix">
+<code class="sig-name descname"><span class="pre">dot_with_matrix</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyqec.sparse.BinaryVector.dot_with_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the dot product between self and a matrix.</p>
+<p>This assume that the vector is in row shape
+and compute <cite>v * M</cite>.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pyqec.sparse</span> <span class="kn">import</span> <span class="n">BinaryVector</span><span class="p">,</span> <span class="n">PyBinaryMatrix</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">vector</span> <span class="o">=</span> <span class="n">BinaryVector</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">matrix</span> <span class="o">=</span> <span class="n">PyBinaryMatrix</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">]],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">vector</span><span class="o">.</span><span class="n">dot_with_matrix</span><span class="p">(</span><span class="n">matrix</span><span class="p">)</span>
+<span class="go">[0, 1]</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If the vector length is the not the same as the matrix number of rows.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyqec.sparse.BinaryVector.dot_with_vector">
+<code class="sig-name descname"><span class="pre">dot_with_vector</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyqec.sparse.BinaryVector.dot_with_vector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the dot product between two vectors.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pyqec.sparse</span> <span class="kn">import</span> <span class="n">BinaryVector</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">left</span> <span class="o">=</span> <span class="n">BinaryVector</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">right</span> <span class="o">=</span> <span class="n">BinaryVector</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">left</span><span class="o">.</span><span class="n">dot_with_vector</span><span class="p">(</span><span class="n">right</span><span class="p">)</span>
+<span class="go">0</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If the vector have different length.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyqec.sparse.BinaryVector.element">
+<code class="sig-name descname"><span class="pre">element</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyqec.sparse.BinaryVector.element" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the value of the element at the given position.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>IndexError</strong> – The position is out of bound.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyqec.sparse.BinaryVector.empty">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">empty</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyqec.sparse.BinaryVector.empty" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructs a vector of length 0.</p>
+<p>This is useful as a placeholder since it allocates a minimal
+amount of memory.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyqec.sparse.BinaryVector.is_empty">
+<code class="sig-name descname"><span class="pre">is_empty</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyqec.sparse.BinaryVector.is_empty" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if the length of the vector is 0.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyqec.sparse.BinaryVector.is_one_at">
+<code class="sig-name descname"><span class="pre">is_one_at</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyqec.sparse.BinaryVector.is_one_at" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if the element at the given position is one.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>IndexError</strong> – The position is out of bound.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyqec.sparse.BinaryVector.is_zero">
+<code class="sig-name descname"><span class="pre">is_zero</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyqec.sparse.BinaryVector.is_zero" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if all elements are 0.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyqec.sparse.BinaryVector.is_zero_at">
+<code class="sig-name descname"><span class="pre">is_zero_at</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyqec.sparse.BinaryVector.is_zero_at" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if the element at the given position is zero.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>IndexError</strong> – The position is out of bound.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyqec.sparse.BinaryVector.len">
+<code class="sig-name descname"><span class="pre">len</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyqec.sparse.BinaryVector.len" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of elements in the vector.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyqec.sparse.BinaryVector.non_trivial_position">
+<code class="sig-name descname"><span class="pre">non_trivial_position</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyqec.sparse.BinaryVector.non_trivial_position" title="Permalink to this definition">¶</a></dt>
+<dd><p>Index the given value in the list of non-trivial positions.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pyqec.sparse</span> <span class="kn">import</span> <span class="n">BinaryVector</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">vector</span> <span class="o">=</span> <span class="n">BinaryVector</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">vector</span><span class="o">.</span><span class="n">non_trivial_position</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="go">0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">vector</span><span class="o">.</span><span class="n">non_trivial_position</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">vector</span><span class="o">.</span><span class="n">non_trivial_position</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="go">4</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>IndexError</strong> – The index is greater or equal to the weight.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyqec.sparse.BinaryVector.weight">
+<code class="sig-name descname"><span class="pre">weight</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyqec.sparse.BinaryVector.weight" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of elements with value 1.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="pyqec.sparse.BinaryVector.zeros">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">zeros</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">length</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyqec.sparse.BinaryVector.zeros" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructs a vector of the given length filled with zeros.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="conversion-to-numpy">
+<h2>Conversion to Numpy<a class="headerlink" href="#conversion-to-numpy" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="pyqec.sparse.to_dense">
+<code class="sig-prename descclassname"><span class="pre">pyqec.sparse.</span></code><code class="sig-name descname"><span class="pre">to_dense</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sparse_bin_array</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyqec.sparse.to_dense" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts a sparse matrix or vector to a dense numpy representation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>sparse_bin_array</strong> (<em>Union</em><em>[</em><a class="reference internal" href="#pyqec.sparse.BinaryMatrix" title="pyqec.sparse.BinaryMatrix"><em>BinaryMatrix</em></a><em>, </em><a class="reference internal" href="#pyqec.sparse.BinaryVector" title="pyqec.sparse.BinaryVector"><em>BinaryVector</em></a><em>]</em>) – The array to convert.</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pyqec.sparse</span> <span class="kn">import</span> <span class="n">BinaryMatrix</span><span class="p">,</span> <span class="n">to_dense</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">to_dense</span><span class="p">(</span><span class="n">BinaryMatrix</span><span class="o">.</span><span class="n">identity</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+<span class="go">array([[1, 0, 0],</span>
+<span class="go">       [0, 1, 0],</span>
+<span class="go">       [0, 0, 1]], dtype=int32)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+<div class="section" id="general-operations">
+<h2>General operations<a class="headerlink" href="#general-operations" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="pyqec.sparse.dot">
+<code class="sig-prename descclassname"><span class="pre">pyqec.sparse.</span></code><code class="sig-name descname"><span class="pre">dot</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyqec.sparse.dot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the dot product between two sparse binary arrays.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>left</strong> (<em>Union</em><em>[</em><a class="reference internal" href="#pyqec.sparse.BinaryMatrix" title="pyqec.sparse.BinaryMatrix"><em>BinaryMatrix</em></a><em>, </em><a class="reference internal" href="#pyqec.sparse.BinaryVector" title="pyqec.sparse.BinaryVector"><em>BinaryVector</em></a><em>]</em>) – The left hand side of the product.</p></li>
+<li><p><strong>right</strong> (<em>Union</em><em>[</em><a class="reference internal" href="#pyqec.sparse.BinaryMatrix" title="pyqec.sparse.BinaryMatrix"><em>BinaryMatrix</em></a><em>, </em><a class="reference internal" href="#pyqec.sparse.BinaryVector" title="pyqec.sparse.BinaryVector"><em>BinaryVector</em></a><em>]</em>) – The right hand side of the product.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pyqec.sparse</span> <span class="kn">import</span> <span class="n">BinaryMatrix</span><span class="p">,</span> <span class="n">BinaryVector</span><span class="p">,</span> <span class="n">dot</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">matrix1</span> <span class="o">=</span> <span class="n">BinaryMatrix</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">matrix2</span> <span class="o">=</span> <span class="n">BinaryMatrix</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="p">[[</span><span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dot</span><span class="p">(</span><span class="n">matrix1</span><span class="p">,</span> <span class="n">matrix2</span><span class="p">)</span>
+<span class="go">[0, 1]</span>
+<span class="go">[0]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">vector</span> <span class="o">=</span> <span class="n">BinaryVector</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dot</span><span class="p">(</span><span class="n">matrix1</span><span class="p">,</span> <span class="n">vector</span><span class="p">)</span>
+<span class="go">[0, 1]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dot</span><span class="p">(</span><span class="n">vector</span><span class="p">,</span> <span class="n">matrix2</span><span class="p">)</span>
+<span class="go">[1]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+</div>
+
+
+              </div>
+              
+              
+              <div class='prev-next-bottom'>
+                
+    <a class='left-prev' id="prev-link" href="classical.html" title="previous page">Classical error correction</a>
+
+              </div>
+              
+          </main>
+          
+
+      </div>
+    </div>
+  
+  <script src="_static/js/index.1c5a1a01449ed65a7b51.js"></script>
+
+  <footer class="footer mt-5 mt-md-0">
+  <div class="container">
+    
+    <div class="footer-item">
+      <p class="copyright">
+    &copy; Copyright 2021, maxtremblay.<br/>
+</p>
+    </div>
+    
+    <div class="footer-item">
+      <p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.5.4.<br/>
+</p>
+    </div>
+    
+  </div>
+</footer>
+  </body>
+</html>
