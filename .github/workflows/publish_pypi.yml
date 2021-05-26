@@ -93,7 +93,7 @@ jobs:
       with:
         target: ${{ matrix.target }}
         manylinux: auto
-        args: --release --out dist --no-sdist -m python/Cargo.toml
+        args: --release --out dist --no-sdist
     - name: Install built wheel
       run: |
         pip install pyqec --find-links dist --force-reinstall
