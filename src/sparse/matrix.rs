@@ -35,7 +35,7 @@ use std::hash::{Hash, Hasher};
 /// ------
 /// If the number of columns is negative or
 /// if a position in a row is out of bound.
-#[pyclass(name = BinaryMatrix, module="pyqec.pyqec")]
+#[pyclass(name = "BinaryMatrix", module="pyqec.pyqec")]
 #[derive(Debug, Clone)]
 pub struct PyBinaryMatrix {
     pub(crate) inner: SparseBinMat,

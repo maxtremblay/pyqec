@@ -3,7 +3,7 @@ use ldpc::decoders::FlipDecoder;
 use ldpc::LinearCode;
 use pyo3::prelude::*;
 
-#[pyclass(name = FlipDecoder)]
+#[pyclass(name = "FlipDecoder")]
 pub struct PyFlipDecoder {
     pub(crate) inner: FlipDecoder<LinearCode>,
     tag: String,

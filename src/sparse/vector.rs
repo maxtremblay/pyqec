@@ -30,7 +30,7 @@ use std::hash::{Hash, Hasher};
 /// ------
 /// ValueError
 ///     If the length is negative or if a position is out of bound.
-#[pyclass(name = BinaryVector, module="pyqec.pyqec")]
+#[pyclass(name = "BinaryVector", module="pyqec.pyqec")]
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct PyBinaryVector {
     pub(crate) inner: SparseBinVec,

@@ -12,7 +12,7 @@ use pyo3::ToPyObject;
 ///
 /// A binary symmetric channel flips the value
 /// of each bits according to a given error probability.
-#[pyclass(name = BinarySymmetricChannel, module="pyqec.pyqec")]
+#[pyclass(name = "BinarySymmetricChannel", module="pyqec.pyqec")]
 pub struct PyBinarySymmetricChannel {
     channel: BinarySymmetricChannel,
     probability: f64,

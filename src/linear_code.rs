@@ -95,7 +95,7 @@ pub(crate) fn repetition_code(length: usize, tag: Option<String>) -> PyLinearCod
 ///     False
 ///     >>> code_pcm.has_same_codespace(code_gm)
 ///     True
-#[pyclass(name = LinearCode, module="pyqec.pyqec")]
+#[pyclass(name = "LinearCode", module="pyqec.pyqec")]
 #[text_signature = "(parity_check_matrix=None, generator_matrix=None, tag=None)"]
 pub struct PyLinearCode {
     pub(crate) inner: LinearCode,
@@ -233,7 +233,7 @@ impl PyLinearCode {
     /// ValueError
     ///     If a position in the message is greater or equal to the length of the code.
     #[text_signature = "(self, message)"]
-    pub fn syndrome_of(&self, message: PyRef<PyBinaryVector>) -> PyResult<PyBinaryVector> {
+    pub fn syndrome_of(&self, message: &PyBinaryVector) -> PyResult<PyBinaryVector> {
         Ok(self.inner.syndrome_of(&message.inner).into())
     }
 
@@ -250,7 +250,7 @@ impl PyLinearCode {
     ///     True if the message has the right length and a zero syndrome
     ///     or False otherwise.
     #[text_signature = "(self, message)"]
-    pub fn has_codeword(&self, message: PyRef<PyBinaryVector>) -> bool {
+    pub fn has_codeword(&self, message: &PyBinaryVector) -> bool {
         self.inner.has_codeword(&message.inner)
     }
 
@@ -268,7 +268,7 @@ impl PyLinearCode {
     ///     True if other codewords are exactly the same
     ///     as this code codewords.
     #[text_signature = "(self, other)"]
-    pub fn has_same_codespace(&self, other: PyRef<Self>) -> bool {
+    pub fn has_same_codespace(&self, other: &Self) -> bool {
         self.inner.has_same_codespace_as(&other.inner)
     }
 
