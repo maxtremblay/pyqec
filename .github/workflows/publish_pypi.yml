@@ -7,14 +7,11 @@ on:
 jobs:
   macos:
     runs-on: macos-latest
-    strategy:
-      matrix:
-        python-version: [3.6, 3.7, 3.8, 3.9]
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: 3.9
           architecture: x64
       - name: Install Rust toolchain
         uses: actions-rs/toolchain@v1
@@ -26,11 +23,12 @@ jobs:
         uses: messense/maturin-action@v1
         with:
           target: x86_64
-          args: --release --out dist 
+          args: --release --out dist
       - name: Install built wheel - x86_64
         run: |
+          pip install pytest
           pip install pyqec --find-links dist --force-reinstall
-          python -c "import pyqec"
+          cd tests && pytest -v
       - name: Build wheels - universal2
         uses: messense/maturin-action@v1
         with:
@@ -38,7 +36,7 @@ jobs:
       - name: Install built wheel - universal2
         run: |
           pip install pyqec --find-links dist --force-reinstall
-          cd .. && python -c "import pyqec"
+          cd tests && pytest -v
       - name: Upload wheels
         uses: actions/upload-artifact@v2
         with:
@@ -47,14 +45,11 @@ jobs:
 
   windows:
     runs-on: windows-latest
-    strategy:
-      matrix:
-        python-version: [3.6, 3.7, 3.8, 3.9]
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: 3.9
           architecture: x64
       - name: Install Rust toolchain
         uses: actions-rs/toolchain@v1
@@ -69,8 +64,9 @@ jobs:
           args: --release --out dist --no-sdist
       - name: Install built wheel64
         run: |
+          pip install pytest
           pip install pyqec --find-links dist --force-reinstall
-          cd .. && python -c "import pyqec"
+          cd tests && pytest -v
       - name: Upload wheels
         uses: actions/upload-artifact@v2
         with:
@@ -79,14 +75,11 @@ jobs:
 
   linux:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: [3.6, 3.7, 3.8, 3.9]
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-python@v2
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: 3.9
         architecture: x64
     - name: Build Wheels
       uses: messense/maturin-action@v1
@@ -96,8 +89,9 @@ jobs:
         args: --release --out dist --no-sdist
     - name: Install built wheel
       run: |
+        pip install pytest
         pip install pyqec --find-links dist --force-reinstall
-        cd .. && python -c "import pyqec"
+        cd tests && pytest -v
     - name: Upload wheels
       uses: actions/upload-artifact@v2
       with:
