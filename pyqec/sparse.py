@@ -27,7 +27,7 @@ def to_dense(sparse_bin_array):
 
 
 def _mat_to_dense(matrix):
-    array = np.zeros((matrix.number_of_rows(), matrix.number_of_columns()), dtype=np.int32)
+    array = np.zeros((matrix.num_rows(), matrix.num_columns()), dtype=np.int32)
     for row, cols in enumerate(matrix.rows()):
         for col in cols:
             array[row, col] = 1
