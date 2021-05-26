@@ -70,21 +70,25 @@ impl PyBinaryVector {
     }
 
     /// Returns the number of elements in the vector.
+    #[text_signature = "(self)"]
     pub fn len(&self) -> usize {
         self.inner.len()
     }
 
     /// Returns the number of elements with value 1.
+    #[text_signature = "(self)"]
     pub fn weight(&self) -> usize {
         self.inner.weight()
     }
     
     /// Checks if the length of the vector is 0.
+    #[text_signature = "(self)"]
     pub fn is_empty(&self) -> bool {
         self.inner.is_empty()
     }
 
     /// Checks if all elements are 0.
+    #[text_signature = "(self)"]
     pub fn is_zero(&self) -> bool {
         self.inner.is_zero()
     }
@@ -95,6 +99,7 @@ impl PyBinaryVector {
     /// ------
     /// IndexError
     ///     The position is out of bound.
+    #[text_signature = "(self, position)"]
     pub fn is_zero_at(&self, position: usize) -> PyResult<bool> {
         self.inner.is_zero_at(position).ok_or_else(|| {
             PyIndexError::new_err(format!(
@@ -111,10 +116,11 @@ impl PyBinaryVector {
     /// ------
     /// IndexError
     ///     The position is out of bound.
+    #[text_signature = "(self, position)"]
     pub fn is_one_at(&self, index: usize) -> PyResult<bool> {
         self.inner.is_one_at(index).ok_or_else(|| {
             PyIndexError::new_err(format!(
-                "invalid index {} for vector of length {}",
+                "invalid position {} for vector of length {}",
                 index,
                 self.inner.len()
             ))
@@ -127,11 +133,12 @@ impl PyBinaryVector {
     /// ------
     /// IndexError
     ///     The position is out of bound.
-    pub fn element(&self, index: usize) -> PyResult<u8> {
-        self.inner.get(index).ok_or_else(|| {
+    #[text_signature = "(self, position)"]
+    pub fn element(&self, position: usize) -> PyResult<u8> {
+        self.inner.get(position).ok_or_else(|| {
             PyIndexError::new_err(format!(
-                "invalid index {} for vector of length {}",
-                index,
+                "invalid position {} for vector of length {}",
+                position,
                 self.len()
             ))
         })
@@ -154,6 +161,7 @@ impl PyBinaryVector {
     /// ------
     /// IndexError
     ///     The index is greater or equal to the weight.
+    #[text_signature = "(self, index)"]
     pub fn non_trivial_position(&self, index: usize) -> PyResult<usize> {
         self.non_trivial_positions()
             .get(index)
@@ -176,6 +184,7 @@ impl PyBinaryVector {
     ///     >>> right = BinaryVector(4, [1, 3])
     ///     >>> left.concat(right)
     ///     [0, 2, 4, 6, 8]
+    #[text_signature = "(self, other)"]
     pub fn concat(&self, other: PyRef<Self>) -> Self {
         self.inner.concat(&other.inner).into()
     }
@@ -193,7 +202,8 @@ impl PyBinaryVector {
     /// Raises
     /// ------
     /// ValueError
-    ///     If the vector have different length.
+    ///     If the vectors have different length.
+    #[text_signature = "(self, other)"]
     pub fn dot_with_vector(&self, other: PyRef<Self>) -> PyResult<u8> {
         self.inner
             .dot_with(&other.inner)
@@ -217,6 +227,7 @@ impl PyBinaryVector {
     /// ------
     /// ValueError
     ///     If the vector length is the not the same as the matrix number of rows.
+    #[text_signature = "(self, matrix)"]
     pub fn dot_with_matrix(&self, other: PyRef<PyBinaryMatrix>) -> PyResult<Self> {
         other.dot_with_vector(self)
     }
@@ -235,6 +246,7 @@ impl PyBinaryVector {
     /// ------
     /// ValueError
     ///     If the vectors have different lengths.
+    #[text_signature = "(self, other)"]
     pub fn bitwise_xor(&self, other: PyRef<Self>) -> PyResult<Self> {
         self.inner
             .bitwise_xor_with(&other.inner)
