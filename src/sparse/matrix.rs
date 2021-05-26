@@ -107,36 +107,43 @@ impl PyBinaryMatrix {
     }
 
     /// Returns the number of columns in the matrix.
+    #[text_signature = "(self)"]
     pub fn num_columns(&self) -> usize {
         self.inner.number_of_columns()
     }
 
     /// Returns the number of rows in the matrix.
+    #[text_signature = "(self)"]
     pub fn num_rows(&self) -> usize {
         self.inner.number_of_rows()
     }
 
     /// Returns a tuple of the numbers of rows and columns.  
+    #[text_signature = "(self)"]
     pub fn shape(&self) -> (usize, usize) {
         self.inner.dimension()
     }
 
     /// Returns the number of elements with value 0.
+    #[text_signature = "(self)"]
     pub fn num_zeros(&self) -> usize {
         self.inner.number_of_zeros()
     }
 
     /// Returns the number of elements with value 1.
+    #[text_signature = "(self)"]
     pub fn num_ones(&self) -> usize {
         self.inner.number_of_ones()
     }
 
     /// Checks if the matrix has shape (0, 0).
+    #[text_signature = "(self)"]
     pub fn is_empty(&self) -> bool {
         self.inner.is_empty()
     }
 
     /// Checks if all the elements have value 0.
+    #[text_signature = "(self)"]
     pub fn is_zero(&self) -> bool {
         self.inner.is_zero()
     }
@@ -150,6 +157,7 @@ impl PyBinaryMatrix {
     ///     >>> matrix = BinaryMatrix(4, [[0, 1, 2], [1, 3], [0, 2], [0, 2, 3]])
     ///     >>> matrix.rank()
     ///     3
+    #[text_signature = "(self)"]
     pub fn rank(&self) -> usize {
         self.inner.rank()
     }
@@ -164,6 +172,7 @@ impl PyBinaryMatrix {
     ///     [0, 2]
     ///     [1, 2]
     ///     [0]
+    #[text_signature = "(self)"]
     pub fn transposed(&self) -> Self {
         self.inner.transposed().into()
     }
@@ -179,6 +188,7 @@ impl PyBinaryMatrix {
     ///     [0, 1, 2]
     ///     [1, 3] 
     ///     [3]
+    #[text_signature = "(self)"]
     pub fn echelon_form(&self) -> Self {
         self.inner.echelon_form().into()
     }
@@ -193,6 +203,7 @@ impl PyBinaryMatrix {
     ///     >>> matrix.nullspace()
     ///     [1, 2]
     ///     [0, 1, 3]
+    #[text_signature = "(self)"]
     pub fn nullspace(&self) -> Self {
         self.inner.nullspace().into()
     }
@@ -203,6 +214,7 @@ impl PyBinaryMatrix {
     /// ------
     /// IndexError
     ///   The row or column is out of bound.
+    #[text_signature = "(self, row, column)"]
     pub fn is_zero_at(&self, row: usize, column: usize) -> PyResult<bool> {
         self.inner.is_zero_at(row, column).ok_or_else(|| {
             PyIndexError::new_err(format!(
@@ -221,6 +233,7 @@ impl PyBinaryMatrix {
     /// ------
     /// IndexError
     ///   The row or column is out of bound.
+    #[text_signature = "(self, row, column)"]
     pub fn is_one_at(&self, row: usize, column: usize) -> PyResult<bool> {
         self.inner.is_one_at(row, column).ok_or_else(|| {
             PyIndexError::new_err(format!(
@@ -246,6 +259,7 @@ impl PyBinaryMatrix {
     ///     [0, 1, 2, 4]
     ///     [1, 2, 3, 5]
     ///     [6]
+    #[text_signature = "(self, other)"]
     pub fn horizontal_concat_with(&self, other: &Self) -> Self {
         self.inner.horizontal_concat_with(&other.inner).into()
     }
@@ -265,6 +279,7 @@ impl PyBinaryMatrix {
     ///     [0]
     ///     [1]
     ///     [2]
+    #[text_signature = "(self, other)"]
     pub fn vertical_concat_with(&self, other: &Self) -> Self {
         self.inner.vertical_concat_with(&other.inner).into()
     }
@@ -283,6 +298,7 @@ impl PyBinaryMatrix {
     /// ------
     /// ValueError
     ///     The vector length is not the same as the matrix number of columns.
+    #[text_signature = "(self, vector)"]
     pub fn dot_with_vector(&self, vector: &PyBinaryVector) -> PyResult<PyBinaryVector> {
         self.inner
             .dot_with_vector(&vector.inner)
@@ -306,6 +322,7 @@ impl PyBinaryMatrix {
     /// ------
     /// ValueError
     ///     Number of columns of self is not the same as the number of rows of the other matrix. 
+    #[text_signature = "(self, matrix)"]
     pub fn dot_with_matrix(&self, matrix: &PyBinaryMatrix) -> PyResult<PyBinaryMatrix> {
         self.inner
             .dot_with_matrix(&matrix.inner)
@@ -330,6 +347,7 @@ impl PyBinaryMatrix {
     /// ------
     /// ValueError
     ///     The shapes of the matrices are different.
+    #[text_signature = "(self, other)"]
     pub fn bitwise_xor(&self, other: &PyBinaryMatrix) -> PyResult<PyBinaryMatrix> {
         self.inner
             .bitwise_xor_with(&other.inner)
@@ -343,6 +361,7 @@ impl PyBinaryMatrix {
     /// ------
     /// IndexError
     ///   The row or column is out of bound.
+    #[text_signature = "(self, row, column)"]
     pub fn element(&self, row: usize, column: usize) -> PyResult<u8> {
         self.inner.get(row, column).ok_or_else(|| {
             PyIndexError::new_err(format!(
@@ -360,6 +379,7 @@ impl PyBinaryMatrix {
     /// ------
     /// IndexError
     ///   The row is out of bound.
+    #[text_signature = "(self, row)"]
     pub fn row(&self, row: usize) -> PyResult<PyBinaryVector> {
         self.inner
             .row(row)
@@ -385,6 +405,7 @@ impl PyBinaryMatrix {
     ///     [0, 2]
     ///     [1]
     ///     [0, 1]
+    #[text_signature = "(self)"]
     pub fn rows(&self) -> PyRows {
         PyRows {
             matrix: self.clone(),
