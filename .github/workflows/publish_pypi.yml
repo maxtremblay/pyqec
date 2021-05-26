@@ -38,7 +38,7 @@ jobs:
       - name: Install built wheel - universal2
         run: |
           pip install pyqec --find-links dist --force-reinstall
-          python -c "import pyqec"
+          cd .. && python -c "import pyqec"
       - name: Upload wheels
         uses: actions/upload-artifact@v2
         with:
@@ -71,7 +71,7 @@ jobs:
       - name: Install built wheel
         run: |
           pip install pyqec --find-links dist --force-reinstall
-          python -c "import pyqec"
+          cd .. && python -c "import pyqec"
       - name: Upload wheels
         uses: actions/upload-artifact@v2
         with:
@@ -100,7 +100,7 @@ jobs:
       if: matrix.target == 'x86_64'
       run: |
         pip install pyqec --find-links dist --force-reinstall
-        python -c "import pyqec"
+        cd .. && python -c "import pyqec"
     - name: Upload wheels
       uses: actions/upload-artifact@v2
       with:
@@ -148,7 +148,7 @@ jobs:
         run: |
           ls -lrth /artifacts
           pip3 install pyqec --find-links /artifacts --force-reinstall
-          python3 -c "import pyqec"
+          cd .. && python3 -c "import pyqec"
     - name: Upload wheels
       uses: actions/upload-artifact@v2
       with:
