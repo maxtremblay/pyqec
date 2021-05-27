@@ -14,6 +14,19 @@ def test_row_iterations():
     with pytest.raises(StopIteration):
         rows.__next__()
 
+def test_element_iterations():
+    matrix = BinaryMatrix(4, [[0, 1], [2, 3], [1, 2]])
+    elements = matrix.non_trivial_elements()
+
+    assert elements.__next__() == (0, 0)
+    assert elements.__next__() == (0, 1)
+    assert elements.__next__() == (1, 2)
+    assert elements.__next__() == (1, 3)
+    assert elements.__next__() == (2, 1)
+    assert elements.__next__() == (2, 2)
+
+    with pytest.raises(StopIteration):
+        elements.__next__()
 
 def test_row_access():
     matrix = BinaryMatrix(4, [[0, 1], [2, 3], [1, 2]])

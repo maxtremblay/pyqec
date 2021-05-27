@@ -35,7 +35,7 @@ use std::hash::{Hash, Hasher};
 /// ------
 /// If the number of columns is negative or
 /// if a position in a row is out of bound.
-#[pyclass(name = "BinaryMatrix", module="pyqec.pyqec")]
+#[pyclass(name = "BinaryMatrix", module = "pyqec.pyqec")]
 #[derive(Debug, Clone)]
 pub struct PyBinaryMatrix {
     pub(crate) inner: SparseBinMat,
@@ -88,9 +88,9 @@ impl PyBinaryMatrix {
         Self::from(SparseBinMat::zeros(num_rows, num_columns))
     }
 
-    /// An empty matrix. 
+    /// An empty matrix.
     ///
-    /// Mostly useful as a placeholder since 
+    /// Mostly useful as a placeholder since
     /// it allocate a minimal amount of memory.
     ///
     /// Example
@@ -186,7 +186,7 @@ impl PyBinaryMatrix {
     ///     >>> matrix = BinaryMatrix(4, [[0, 1, 2], [1, 3], [0, 2], [0, 2, 3]])
     ///     >>> matrix.echelon_form()
     ///     [0, 1, 2]
-    ///     [1, 3] 
+    ///     [1, 3]
     ///     [3]
     #[text_signature = "(self)"]
     pub fn echelon_form(&self) -> Self {
@@ -247,7 +247,7 @@ impl PyBinaryMatrix {
     }
 
     /// Returns the horizontal concatenation of self and other matrix.
-    /// 
+    ///
     /// If the matrices have a different number of rows,
     /// the smallest one is padded with zeros.
     ///
@@ -265,7 +265,7 @@ impl PyBinaryMatrix {
     }
 
     /// Returns the vertical concatenation of self and other matrix.
-    /// 
+    ///
     /// If the matrices have a different number of columns,
     /// the smallest one is padded with zeros.
     ///
@@ -321,7 +321,7 @@ impl PyBinaryMatrix {
     /// Raises
     /// ------
     /// ValueError
-    ///     Number of columns of self is not the same as the number of rows of the other matrix. 
+    ///     Number of columns of self is not the same as the number of rows of the other matrix.
     #[text_signature = "(self, matrix)"]
     pub fn dot_with_matrix(&self, matrix: &PyBinaryMatrix) -> PyResult<PyBinaryMatrix> {
         self.inner
@@ -329,7 +329,6 @@ impl PyBinaryMatrix {
             .map(|result| result.into())
             .map_err(|error| PyValueError::new_err(error.to_string()))
     }
-
 
     /// Returns the bitwise xor sum of self and other.
     ///
@@ -354,7 +353,7 @@ impl PyBinaryMatrix {
             .map(|result| result.into())
             .map_err(|error| PyValueError::new_err(error.to_string()))
     }
-    
+
     /// Returns the element at the given row and column.
     ///
     /// Raises
@@ -398,7 +397,7 @@ impl PyBinaryMatrix {
     //
     // Example
     // -------
-    ///     >>> from pyqec.sparse import BinaryMatrix, to_dense
+    ///     >>> from pyqec.sparse import BinaryMatrix
     ///     >>> matrix = BinaryMatrix(3, [[0, 2], [1], [0, 1]])
     ///     >>> for row in matrix.rows():
     ///     ...    print(row)
@@ -410,6 +409,28 @@ impl PyBinaryMatrix {
         PyRows {
             matrix: self.clone(),
             row_index: 0,
+        }
+    }
+
+    // Returns an iterator throught all elements with value 1.
+    //
+    // Example
+    // -------
+    ///     >>> from pyqec.sparse import BinaryMatrix
+    ///     >>> matrix = BinaryMatrix(3, [[0, 2], [1], [0, 1]])
+    ///     >>> for elem in matrix.non_trivial_elements():
+    ///     ...    print(elem)
+    ///     (0, 0)
+    ///     (0, 2)
+    ///     (1, 1)
+    ///     (2, 0)
+    ///     (2, 1)
+    #[text_signature = "(self)"]
+    pub fn non_trivial_elements(&self) -> PyElements {
+        PyElements {
+            matrix: self.clone(),
+            row_index: 0,
+            column_index: 0,
         }
     }
 
@@ -479,5 +500,57 @@ impl PyIterProtocol for PyRows {
             .map(|row| row.to_owned().into());
         slf.row_index += 1;
         row
+    }
+}
+
+#[pyclass]
+pub struct PyElements {
+    matrix: PyBinaryMatrix,
+    row_index: usize,
+    column_index: usize,
+}
+
+impl PyElements {
+    fn next_element(&mut self) -> Option<(usize, usize)> {
+        self.matrix
+            .inner
+            .row(self.row_index)
+            .and_then(|row| row.as_slice().get(self.column_index).cloned())
+            .map(|column| (self.row_index, column))
+    }
+
+    fn move_to_next_row(&mut self) {
+        self.row_index += 1;
+        self.column_index = 0;
+    }
+
+    fn move_to_next_column(&mut self) {
+        self.column_index += 1;
+    }
+
+    fn is_done(&self) -> bool {
+        self.row_index >= self.matrix.num_rows()
+    }
+}
+
+#[pyproto]
+impl PyIterProtocol for PyElements {
+    fn __iter__(slf: PyRef<Self>) -> PyRef<Self> {
+        slf
+    }
+
+    fn __next__(mut slf: PyRefMut<Self>) -> Option<(usize, usize)> {
+        while !slf.is_done() {
+            match slf.next_element() {
+                Some(element) => {
+                    slf.move_to_next_column();
+                    return Some(element);
+                }
+                None => {
+                    slf.move_to_next_row();
+                }
+            }
+        }
+        None
     }
 }
