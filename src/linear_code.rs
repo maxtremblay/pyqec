@@ -1,6 +1,6 @@
 use crate::randomness::get_rng_with_seed;
 use crate::sparse::{PyBinaryMatrix, PyBinaryVector};
-use ldpc::LinearCode;
+use ldpc::classical::LinearCode;
 use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
 use pyo3::types::PyBytes;
@@ -19,8 +19,8 @@ pub(crate) fn random_regular_code(
     let tag = tag.unwrap_or("".to_string());
     let mut rng = get_rng_with_seed(random_seed);
     LinearCode::random_regular_code()
-        .block_size(num_bits)
-        .number_of_checks(num_checks)
+        .num_bits(num_bits)
+        .num_checks(num_checks)
         .bit_degree(bit_degree)
         .check_degree(check_degree)
         .sample_with(&mut rng)
@@ -172,7 +172,7 @@ impl PyLinearCode {
     ///     true
     #[text_signature = "(self)"]
     pub fn length(&self) -> usize {
-        self.inner.block_size()
+        self.inner.len()
     }
 
     /// The number of encoded qubits.
@@ -205,13 +205,13 @@ impl PyLinearCode {
     /// The number of checks in the code.
     #[text_signature = "(self)"]
     pub fn num_checks(&self) -> usize {
-        self.inner.number_of_checks()
+        self.inner.num_checks()
     }
 
     /// The number of codeword generators in the code.
     #[text_signature = "(self)"]
     pub fn num_generators(&self) -> usize {
-        self.inner.number_of_generators()
+        self.inner.num_generators()
     }
 
     /// The syndrome of a given message.
@@ -269,7 +269,7 @@ impl PyLinearCode {
     ///     as this code codewords.
     #[text_signature = "(self, other)"]
     pub fn has_same_codespace(&self, other: &Self) -> bool {
-        self.inner.has_same_codespace_as(&other.inner)
+        self.inner.has_same_codespace(&other.inner)
     }
 
     pub fn __setstate__(&mut self, py: Python, state: PyObject) -> PyResult<()> {

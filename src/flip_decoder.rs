@@ -1,6 +1,6 @@
 use crate::{PyBinaryVector, PyLinearCode};
-use ldpc::decoders::FlipDecoder;
-use ldpc::LinearCode;
+use ldpc::classical::decoders::FlipDecoder;
+use ldpc::classical::LinearCode;
 use pyo3::prelude::*;
 
 #[pyclass(name = "FlipDecoder")]

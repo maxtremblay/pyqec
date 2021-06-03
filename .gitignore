@@ -7,3 +7,4 @@ poetry.lock
 pyqec/pyqec.cpython-39-x86_64-linux-gnu.so
 *.pdf
 .vscode
+**/*.abi3.so

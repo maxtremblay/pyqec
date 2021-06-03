@@ -1,13 +1,19 @@
 use pyo3::prelude::*;
 
 mod linear_code;
-use linear_code::{random_regular_code, hamming_code, repetition_code, PyLinearCode};
+use linear_code::{hamming_code, random_regular_code, repetition_code, PyLinearCode};
+
+mod css_code;
+use css_code::{hypergraph_product, shor_code, steane_code, PyCssCode};
 
 mod noise;
 use noise::PyBinarySymmetricChannel;
 
 mod flip_decoder;
 use flip_decoder::PyFlipDecoder;
+
+mod pauli;
+use crate::pauli::{PyPauli, PyPauliOperator};
 
 mod randomness;
 
@@ -22,6 +28,9 @@ fn pyqec(_py: Python, module: &PyModule) -> PyResult<()> {
     module.add_class::<PyFlipDecoder>()?;
     module.add_class::<PyBinaryMatrix>()?;
     module.add_class::<PyBinaryVector>()?;
+    module.add_class::<PyPauli>()?;
+    module.add_class::<PyPauliOperator>()?;
+    module.add_class::<PyCssCode>()?;
 
     /// Samples a random regular codes.
     ///
@@ -70,14 +79,13 @@ fn pyqec(_py: Python, module: &PyModule) -> PyResult<()> {
         )
     }
 
-
     /// Returns an instance of the Hamming code.
     ///
     /// Arguments
     /// ---------
     /// tag : Optional[String]
     ///     A label for the code used to save data
-    ///     and make automatic legend in plots.
+    ///     and make automatic legend in plots.  #[pyfn(module, "hamming_code")] #[text_signature = "(tag=None)"]
     #[pyfn(module, "hamming_code")]
     #[text_signature = "(tag=None)"]
     pub fn py_hamming_code(tag: Option<String>) -> PyLinearCode {
@@ -97,6 +105,51 @@ fn pyqec(_py: Python, module: &PyModule) -> PyResult<()> {
     #[text_signature = "(length, tag=None)"]
     pub fn py_repetition_code(length: usize, tag: Option<String>) -> PyLinearCode {
         repetition_code(length, tag)
+    }
+
+    /// Returns an instance of the Steane code.
+    ///
+    /// Arguments
+    /// ---------
+    /// tag : Optional[String]
+    ///     A label for the code used to save data
+    ///     and make automatic legend in plots.
+    #[pyfn(module, "steane_code")]
+    #[text_signature = "(tag=None)"]
+    pub fn py_steane_code(tag: Option<String>) -> PyCssCode {
+        steane_code(tag)
+    }
+
+    /// Returns an instance of the 9-qubit Shor code.
+    ///
+    /// Arguments
+    /// ---------
+    /// tag : Optional[String]
+    ///     A label for the code used to save data
+    ///     and make automatic legend in plots.
+    #[pyfn(module, "shor_code")]
+    #[text_signature = "(tag=None)"]
+    pub fn py_shor_code(tag: Option<String>) -> PyCssCode {
+        shor_code(tag)
+    }
+
+    /// Returns the hypergraph product of two linear codes.
+    ///
+    /// Arguments
+    /// ---------
+    /// first_code : pyqec.classical.LinearCode
+    /// second_code : pyqec.classical.LinearCode
+    /// tag : Optional[String]
+    ///     A label for the code used to save data
+    ///     and make automatic legend in plots.
+    #[pyfn(module, "hypergraph_product")]
+    #[text_signature = "(tag=None)"]
+    pub fn py_hypergraph_product(
+        first_code: &PyLinearCode,
+        second_code: &PyLinearCode,
+        tag: Option<String>,
+    ) -> PyCssCode {
+        hypergraph_product(first_code, second_code, tag)
     }
 
     Ok(())
