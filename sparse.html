@@ -374,6 +374,22 @@ the smallest one is padded with zeros.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="pyqec.sparse.BinaryMatrix.non_trivial_elements">
+<code class="sig-name descname"><span class="pre">non_trivial_elements</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyqec.sparse.BinaryMatrix.non_trivial_elements" title="Permalink to this definition">¶</a></dt>
+<dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pyqec.sparse</span> <span class="kn">import</span> <span class="n">BinaryMatrix</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">matrix</span> <span class="o">=</span> <span class="n">BinaryMatrix</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">matrix</span><span class="o">.</span><span class="n">non_trivial_elements</span><span class="p">():</span>
+<span class="gp">... </span>   <span class="nb">print</span><span class="p">(</span><span class="n">elem</span><span class="p">)</span>
+<span class="go">(0, 0)</span>
+<span class="go">(0, 2)</span>
+<span class="go">(1, 1)</span>
+<span class="go">(2, 0)</span>
+<span class="go">(2, 1)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
 <dt id="pyqec.sparse.BinaryMatrix.nullspace">
 <code class="sig-name descname"><span class="pre">nullspace</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyqec.sparse.BinaryMatrix.nullspace" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns an orthogonal matrix where the rows
@@ -440,7 +456,7 @@ of the matrix.</p>
 <dl class="py method">
 <dt id="pyqec.sparse.BinaryMatrix.rows">
 <code class="sig-name descname"><span class="pre">rows</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pyqec.sparse.BinaryMatrix.rows" title="Permalink to this definition">¶</a></dt>
-<dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pyqec.sparse</span> <span class="kn">import</span> <span class="n">BinaryMatrix</span><span class="p">,</span> <span class="n">to_dense</span>
+<dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pyqec.sparse</span> <span class="kn">import</span> <span class="n">BinaryMatrix</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">matrix</span> <span class="o">=</span> <span class="n">BinaryMatrix</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">matrix</span><span class="o">.</span><span class="n">rows</span><span class="p">():</span>
 <span class="gp">... </span>   <span class="nb">print</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
