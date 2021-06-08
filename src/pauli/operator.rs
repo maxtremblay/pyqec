@@ -6,7 +6,7 @@ use pyo3::types::PyBytes;
 use pyo3::ToPyObject;
 use pyo3::{PyObjectProtocol, PySequenceProtocol};
 
-#[pyclass(name = "Pauli", module = "pyqec.pyqec")]
+#[pyclass(name = "PauliOperator", module = "pyqec.pyqec")]
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct PyPauliOperator {
     pub(crate) inner: PauliOperator,
