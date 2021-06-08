@@ -101,7 +101,7 @@ impl PyCssCode {
 
     /// Returns the X logical generators represented as a binary matrix.
     #[text_signature = "(self)"]
-    pub fn x_logical_binary(&self) -> PyBinaryMatrix {
+    pub fn x_logicals_binary(&self) -> PyBinaryMatrix {
         self.inner.x_logicals_binary().clone().into()
     }
 
