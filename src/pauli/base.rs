@@ -19,7 +19,6 @@ impl From<Pauli> for PyPauli {
     }
 }
 
-
 #[pymethods]
 impl PyPauli {
     /// The identity single-qubit Pauli operator.
