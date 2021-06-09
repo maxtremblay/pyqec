@@ -83,7 +83,7 @@ def zeros(shape):
     """
     if isinstance(shape, int):
         BinaryVector.zeros(shape)
-    elif isinstance(shape, Tuple[int, int]):
+    elif isinstance(shape, tuple[int, int]):
         BinaryMatrix.identity(*shape)
     else:
         raise NotImplemented

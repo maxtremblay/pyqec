@@ -1,14 +1,6 @@
 from pyqec.sparse import BinaryMatrix, BinaryVector
-from pyqec.classical import LinearCode, BinarySymmetricChannel
+from pyqec.classical import LinearCode, BinarySymmetricChannel, repetition_code
 from pyqec.experiments import ClassicalDecodingExperiment, Laboratory
-
-
-def repetition_code(length):
-    if length % 2 != 1:
-        raise ValueError("length must be an odd integer")
-    checks = [[i, i + 1] for i in range(length - 1)]
-    parity_check_matrix = BinaryMatrix(length, checks)
-    return LinearCode(parity_check_matrix, tag=f"n = {length}")
 
 
 class MajorityDecoder:
@@ -25,12 +17,9 @@ class MajorityDecoder:
         else:
             return self.zero_codeword
 
-    def tag(self):
-        return "DECODER"
-
 
 def build_experiment(code_length, probability):
-    code = repetition_code(code_length)
+    code = repetition_code(code_length, f"n = {code_length}")
     decoder = MajorityDecoder(code)
     noise = BinarySymmetricChannel(probability)
     return ClassicalDecodingExperiment(code, decoder, noise)

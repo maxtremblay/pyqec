@@ -1,3 +1,4 @@
+from pyqec.experiments.css_decoding import CssDecodingExperiment
 import multiprocess as mup
 from .results import Results
 
