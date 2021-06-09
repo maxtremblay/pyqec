@@ -1,29 +1,32 @@
 import json
-from .statistics import Statistics
 from . import DecodingExperiment
 
-
-class ClassicalDecodingExperiment(DecodingExperiment):
-    def __init__(self, code, decoder, noise):
+class CssDecodingExperiment(DecodingExperiment):
+    def __init__(self, code, x_decoder, z_decoder, noise):
         self.code = code
-        self.decoder = decoder
+        self.x_decoder = x_decoder 
+        self.z_decoder = z_decoder 
         self.noise = noise
 
     def run_once(self):
-        """
-        Run a single decoding simulation assuming a zero codeword.
+        """ Runs a random decoding simulation and returns True if the process
+        is successful. Else returns False.
         """
         error = self.noise.sample_error_of_length(len(self.code))
-        codeword = self.decoder.decode(error)
-        return codeword.is_zero()
+        (x_syndrome, z_syndrome) = self.code.syndrome_of(error)
+        x_correction = self.x_decoder.decode(x_syndrome)
+        z_correction = self.z_decoder.decode(z_syndrome)
+        return self.code.has_stabilizer(x_correction.apply(z_correction).apply(error))
 
     def to_json(self):
         return json.dumps(
             {
                 "length": len(self.code),
                 "dimension": self.code.dimension(),
-                "number_of_checks": self.code.number_of_checks(),
-                "decoder": self.decoder.to_json(),
+                "num_x_stabs": self.code.num_x_stabs(),
+                "num_z_stabs": self.code.num_z_stabs(),
+                "x_decoder": self.x_decoder.to_json(),
+                "z_decoder": self.z_decoder.to_json(),
             }
         )
 
@@ -36,9 +39,10 @@ class ClassicalDecodingExperiment(DecodingExperiment):
         except:
             code_tag = None
         try:
-            decoder_tag = self.decoder.tag()
+            decoder_tag = self.x_decoder.tag() + " / " + self.z_decoder.tag()
         except:
             decoder_tag = None
+
         if code_tag and decoder_tag:
             return f"{code_tag} + {decoder_tag}"
         elif code_tag:
